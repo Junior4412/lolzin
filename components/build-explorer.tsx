@@ -37,6 +37,7 @@ import {
   modes
 } from "@/lib/builds";
 import SkillOrderPanel from "./SkillOrderPanel";
+import AramMayhemPanel from "./AramMayhemPanel";
 
 const version = ddragonVersion();
 type SidebarView = "builds" | "matchups" | "favorites";
@@ -288,6 +289,7 @@ export default function BuildExplorer() {
             <span>confiança</span>
           </div>
         </div>
+        <AramMayhemPanel selected={selected} />
         <BuildView
           abilityDetails={selectedAbilityDetails}
           catalogItems={catalogItems}
