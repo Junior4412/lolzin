@@ -1,6 +1,6 @@
-# DraftForge - LoL Build MVP
+# BUILDS DO JUNIN - LoL Build Lab & Estatísticas
 
-MVP de SaaS inspirado em ferramentas como Blitz e OP.GG: o usuario busca qualquer campeao, escolhe o modo de jogo e recebe uma build com itens, runas, feiticos, power spikes e plano de jogo.
+MVP de SaaS inspirado em ferramentas como Blitz e OP.GG: o usuario busca qualquer campeao, escolhe o modo de jogo e recebe uma build com itens, runas, feiticos, power spikes e plano de jogo. Inclui tambem um modulo de estatisticas de invocador (perfil, elo, historico de partidas e comparacao entre jogadores).
 
 ## Stack
 
