@@ -14,6 +14,7 @@ export type Champion = {
 export type CatalogItem = {
   id: string;
   name: string;
+  nameEn?: string;
   plaintext: string;
   tags: string[];
   stats: Record<string, number>;
@@ -529,7 +530,7 @@ export const buildArchetypes: BuildArchetype[] = [
 ];
 
 export function ddragonVersion() {
-  return process.env.NEXT_PUBLIC_DDRAGON_VERSION || "16.13.1";
+  return process.env.NEXT_PUBLIC_DDRAGON_VERSION || "16.14.1";
 }
 
 export function championImageUrl(championId: string, version = ddragonVersion()) {
@@ -541,17 +542,19 @@ export function itemImageUrl(itemId: string, version = ddragonVersion()) {
 }
 
 export async function loadDDragonData(version = ddragonVersion()): Promise<DDragonData> {
-  const [championResponse, itemResponse] = await Promise.all([
+  const [championResponse, itemResponsePt, itemResponseEn] = await Promise.all([
     fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/pt_BR/champion.json`),
+    fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/pt_BR/item.json`),
     fetch(`https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/item.json`)
   ]);
 
-  if (!championResponse.ok || !itemResponse.ok) {
+  if (!championResponse.ok || !itemResponsePt.ok) {
     throw new Error("Nao foi possivel carregar os dados oficiais do Data Dragon.");
   }
 
   const championJson = (await championResponse.json()) as DDragonChampionResponse;
-  const itemJson = (await itemResponse.json()) as DDragonItemResponse;
+  const itemJsonPt = (await itemResponsePt.json()) as DDragonItemResponse;
+  const itemJsonEn = itemResponseEn.ok ? ((await itemResponseEn.json()) as DDragonItemResponse) : null;
 
   return {
     champions: Object.values(championJson.data)
@@ -564,21 +567,25 @@ export async function loadDDragonData(version = ddragonVersion()): Promise<DDrag
         accent: accents[index % accents.length]
       }))
       .sort((a, b) => a.name.localeCompare(b.name, "pt-BR")),
-    items: Object.entries(itemJson.data)
-      .map(([id, item]) => ({
-        id,
-        name: item.name,
-        plaintext: item.plaintext ?? "",
-        tags: item.tags ?? [],
-        stats: item.stats ?? {},
-        total: item.gold?.total ?? 0,
-        maps: item.maps ?? {},
-        consumed: item.consumed ?? false,
-        inStore: item.inStore !== false && item.gold?.purchasable !== false,
-        depth: item.depth,
-        into: item.into,
-        from: item.from
-      }))
+    items: Object.entries(itemJsonPt.data)
+      .map(([id, itemPt]) => {
+        const itemEn = itemJsonEn?.data[id];
+        return {
+          id,
+          name: itemPt.name,
+          nameEn: itemEn?.name ?? itemPt.name,
+          plaintext: itemPt.plaintext ?? "",
+          tags: itemPt.tags ?? [],
+          stats: itemPt.stats ?? {},
+          total: itemPt.gold?.total ?? 0,
+          maps: itemPt.maps ?? {},
+          consumed: itemPt.consumed ?? false,
+          inStore: itemPt.inStore !== false && itemPt.gold?.purchasable !== false,
+          depth: itemPt.depth,
+          into: itemPt.into,
+          from: itemPt.from
+        };
+      })
       .sort((a, b) => a.name.localeCompare(b.name, "pt-BR"))
   };
 }
@@ -888,12 +895,36 @@ function getPrimaryTag(champion: Champion) {
   return champion.tags[0] ?? "Fighter";
 }
 
-function isCompletedItem(item: CatalogItem) {
-  const isBoot = bootNames.has(item.name) || item.tags.includes("Boots");
-  const isConsumable = item.consumed || item.tags.includes("Consumable") || item.tags.includes("Trinket");
-  const isStarter = starterNames.has(item.name);
+function normalizeItemName(name: string) {
+  return name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/['.]/g, "")
+    .replace(/&/g, "and")
+    .replace(/[-_]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  return !isBoot && !isConsumable && !isStarter && item.total >= 1600 && (!item.into || item.into.length === 0);
+function isCompletedItem(item: CatalogItem) {
+  const normPt = normalizeItemName(item.name);
+  const normEn = item.nameEn ? normalizeItemName(item.nameEn) : normPt;
+
+  const isBoot =
+    Array.from(bootNames).some((b) => {
+      const nb = normalizeItemName(b);
+      return nb === normPt || nb === normEn;
+    }) || item.tags.includes("Boots");
+
+  const isConsumable = item.consumed || item.tags.includes("Consumable") || item.tags.includes("Trinket");
+
+  const isStarter = Array.from(starterNames).some((s) => {
+    const ns = normalizeItemName(s);
+    return ns === normPt || ns === normEn;
+  });
+
+  return !isBoot && !isConsumable && !isStarter && item.total >= 1600;
 }
 
 function pickBoot(items: CatalogItem[], tag: string) {
@@ -908,7 +939,7 @@ function pickBoot(items: CatalogItem[], tag: string) {
             ? "Ionian Boots of Lucidity"
             : "Plated Steelcaps";
 
-  return items.find((item) => item.name === preferred) ?? items.find((item) => bootNames.has(item.name) || item.tags.includes("Boots"));
+  return pickNamedItem(items, [preferred]) ?? items.find((item) => bootNames.has(item.name) || (item.nameEn && bootNames.has(item.nameEn)) || item.tags.includes("Boots"));
 }
 
 function pickStarters(items: CatalogItem[], tag: string, mode: GameMode) {
@@ -926,14 +957,14 @@ function pickStarters(items: CatalogItem[], tag: string, mode: GameMode) {
         : tag === "Support"
           ? ["World Atlas", "Health Potion"]
           : ["Doran's Blade", "Health Potion"];
-  const names = mode === "aram" ? aramNames : defaultNames;
-  const picked = names.map((name) => items.find((item) => item.name === name)).filter(Boolean) as CatalogItem[];
+  const names = mode === "aram" || mode === "aram-chaos" ? aramNames : defaultNames;
+  const picked = names.map((name) => pickNamedItem(items, [name])).filter(Boolean) as CatalogItem[];
 
   if (picked.length > 0) {
     return picked;
   }
 
-  return items.filter((item) => starterNames.has(item.name)).slice(0, 2);
+  return items.filter((item) => starterNames.has(item.name) || (item.nameEn && starterNames.has(item.nameEn))).slice(0, 2);
 }
 
 function pickNamedItems(items: CatalogItem[], names: string[], limit: number) {
@@ -955,11 +986,22 @@ function pickNamedItems(items: CatalogItem[], names: string[], limit: number) {
 
 function pickNamedItem(items: CatalogItem[], names: string[]) {
   for (const name of names) {
-    const normalizedName = normalizeItemName(name);
-    const exact = items.find((item) => normalizeItemName(item.name) === normalizedName);
+    const target = normalizeItemName(name);
+
+    // 1. Exact match PT or EN
+    const exact = items.find((item) => {
+      const pt = normalizeItemName(item.name);
+      const en = item.nameEn ? normalizeItemName(item.nameEn) : pt;
+      return pt === target || en === target;
+    });
     if (exact) return exact;
 
-    const partial = items.find((item) => normalizeItemName(item.name).includes(normalizedName));
+    // 2. Partial match PT or EN
+    const partial = items.find((item) => {
+      const pt = normalizeItemName(item.name);
+      const en = item.nameEn ? normalizeItemName(item.nameEn) : pt;
+      return pt.includes(target) || en.includes(target);
+    });
     if (partial) return partial;
   }
 
@@ -988,15 +1030,6 @@ function fillItems(seed: CatalogItem[], candidates: CatalogItem[], blockedIds: s
   return result.slice(0, limit);
 }
 
-function normalizeItemName(name: string) {
-  return name
-    .toLowerCase()
-    .replace(/['.]/g, "")
-    .replace(/&/g, "and")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function cleanDDragonText(text: string) {
   return text
     .replace(/<br\s*\/?>/gi, " ")
@@ -1007,21 +1040,32 @@ function cleanDDragonText(text: string) {
 }
 
 function scoreItem(item: CatalogItem, tag: string, mode: GameMode, archetype: BuildArchetype, profile: ChampionMetaProfile) {
-  let score = curatedBoosts[tag]?.[item.name] ?? 0;
+  const normPt = normalizeItemName(item.name);
+  const normEn = item.nameEn ? normalizeItemName(item.nameEn) : normPt;
+
+  let score =
+    (curatedBoosts[tag]?.[item.name] ??
+      (item.nameEn ? curatedBoosts[tag]?.[item.nameEn] : undefined)) ??
+    0;
   const tags = new Set(item.tags);
   const stats = item.stats;
 
-  if (profile.core.some((name) => normalizeItemName(name) === normalizeItemName(item.name))) {
+  const matchesTarget = (targetName: string) => {
+    const target = normalizeItemName(targetName);
+    return target === normPt || target === normEn || normPt.includes(target) || normEn.includes(target);
+  };
+
+  if (profile.core.some(matchesTarget)) {
     score += 80;
   }
 
-  if (profile.situational.some((name) => normalizeItemName(name) === normalizeItemName(item.name))) {
+  if (profile.situational.some(matchesTarget)) {
     score += 28;
   }
 
   if (archetype.id !== "meta") {
     score += hasAny(tags, archetype.tags) * 8;
-    if (archetype.preferredItems.includes(item.name)) {
+    if (archetype.preferredItems.some(matchesTarget)) {
       score += 30; // Grande boost para itens do arquetipo
     }
   } else {

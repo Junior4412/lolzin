@@ -112,7 +112,7 @@ export default function BuildExplorer() {
     if (!normalized) return modeItems;
 
     return modeItems.filter((item) => {
-      const haystack = [item.name, item.plaintext, ...item.tags].join(" ").toLowerCase();
+      const haystack = [item.name, item.nameEn ?? "", item.plaintext, ...item.tags].join(" ").toLowerCase();
       return haystack.includes(normalized);
     });
   }, [itemQuery, modeItems]);
