@@ -1,0 +1,212 @@
+export type PrimaryLane = "Top" | "Jungle" | "Mid" | "ADC" | "Support";
+
+export type ChampionArchetype =
+  | "adc-crit"
+  | "adc-onhit"
+  | "adc-caster"
+  | "support-enchanter"
+  | "support-tank"
+  | "support-mage"
+  | "support-pick"
+  | "jungle-assassin"
+  | "jungle-fighter"
+  | "jungle-tank"
+  | "jungle-ap"
+  | "mid-mage"
+  | "mid-assassin"
+  | "mid-scaling"
+  | "top-fighter"
+  | "top-tank"
+  | "top-ap"
+  | "top-marksman";
+
+export type ChampionProfile = {
+  lane: PrimaryLane;
+  archetype: ChampionArchetype;
+};
+
+export const championProfiles: Record<string, ChampionProfile> = {
+  Aatrox: { lane: "Top", archetype: "top-fighter" },
+  Ahri: { lane: "Mid", archetype: "mid-mage" },
+  Akali: { lane: "Mid", archetype: "mid-assassin" },
+  Akshan: { lane: "Mid", archetype: "mid-assassin" },
+  Alistar: { lane: "Support", archetype: "support-tank" },
+  Ambessa: { lane: "Top", archetype: "top-fighter" },
+  Amumu: { lane: "Jungle", archetype: "jungle-tank" },
+  Anivia: { lane: "Mid", archetype: "mid-scaling" },
+  Annie: { lane: "Mid", archetype: "mid-mage" },
+  Aphelios: { lane: "ADC", archetype: "adc-crit" },
+  Ashe: { lane: "ADC", archetype: "adc-caster" },
+  AurelionSol: { lane: "Mid", archetype: "mid-scaling" },
+  Aurora: { lane: "Mid", archetype: "mid-mage" },
+  Azir: { lane: "Mid", archetype: "mid-scaling" },
+  Bard: { lane: "Support", archetype: "support-pick" },
+  Belveth: { lane: "Jungle", archetype: "jungle-fighter" },
+  Blitzcrank: { lane: "Support", archetype: "support-pick" },
+  Brand: { lane: "Support", archetype: "support-mage" },
+  Braum: { lane: "Support", archetype: "support-tank" },
+  Briar: { lane: "Jungle", archetype: "jungle-fighter" },
+  Caitlyn: { lane: "ADC", archetype: "adc-crit" },
+  Camille: { lane: "Top", archetype: "top-fighter" },
+  Cassiopeia: { lane: "Mid", archetype: "mid-scaling" },
+  Chogath: { lane: "Top", archetype: "top-tank" },
+  Corki: { lane: "Mid", archetype: "adc-caster" },
+  Darius: { lane: "Top", archetype: "top-fighter" },
+  Diana: { lane: "Jungle", archetype: "jungle-ap" },
+  Draven: { lane: "ADC", archetype: "adc-crit" },
+  DrMundo: { lane: "Top", archetype: "top-tank" },
+  Ekko: { lane: "Jungle", archetype: "jungle-ap" },
+  Elise: { lane: "Jungle", archetype: "jungle-ap" },
+  Evelynn: { lane: "Jungle", archetype: "jungle-ap" },
+  Ezreal: { lane: "ADC", archetype: "adc-caster" },
+  Fiddlesticks: { lane: "Jungle", archetype: "jungle-ap" },
+  Fiora: { lane: "Top", archetype: "top-fighter" },
+  Fizz: { lane: "Mid", archetype: "mid-assassin" },
+  Galio: { lane: "Mid", archetype: "mid-mage" },
+  Gangplank: { lane: "Top", archetype: "top-fighter" },
+  Garen: { lane: "Top", archetype: "top-fighter" },
+  Gnar: { lane: "Top", archetype: "top-fighter" },
+  Gragas: { lane: "Top", archetype: "top-ap" },
+  Graves: { lane: "Jungle", archetype: "jungle-assassin" },
+  Gwen: { lane: "Top", archetype: "top-ap" },
+  Hecarim: { lane: "Jungle", archetype: "jungle-fighter" },
+  Heimerdinger: { lane: "Mid", archetype: "mid-mage" },
+  Hwei: { lane: "Mid", archetype: "mid-mage" },
+  Illaoi: { lane: "Top", archetype: "top-fighter" },
+  Irelia: { lane: "Top", archetype: "top-fighter" },
+  Ivern: { lane: "Jungle", archetype: "support-enchanter" },
+  Janna: { lane: "Support", archetype: "support-enchanter" },
+  JarvanIV: { lane: "Jungle", archetype: "jungle-fighter" },
+  Jax: { lane: "Top", archetype: "top-fighter" },
+  Jayce: { lane: "Top", archetype: "top-fighter" },
+  Jhin: { lane: "ADC", archetype: "adc-caster" },
+  Jinx: { lane: "ADC", archetype: "adc-crit" },
+  Kaisa: { lane: "ADC", archetype: "adc-onhit" },
+  Kalista: { lane: "ADC", archetype: "adc-onhit" },
+  Karma: { lane: "Support", archetype: "support-enchanter" },
+  Karthus: { lane: "Jungle", archetype: "jungle-ap" },
+  Kassadin: { lane: "Mid", archetype: "mid-scaling" },
+  Katarina: { lane: "Mid", archetype: "mid-assassin" },
+  Kayle: { lane: "Top", archetype: "top-ap" },
+  Kayn: { lane: "Jungle", archetype: "jungle-fighter" },
+  Kennen: { lane: "Top", archetype: "top-ap" },
+  Khazix: { lane: "Jungle", archetype: "jungle-assassin" },
+  Kindred: { lane: "Jungle", archetype: "adc-onhit" },
+  Kled: { lane: "Top", archetype: "top-fighter" },
+  KogMaw: { lane: "ADC", archetype: "adc-onhit" },
+  KSante: { lane: "Top", archetype: "top-tank" },
+  Leblanc: { lane: "Mid", archetype: "mid-assassin" },
+  LeeSin: { lane: "Jungle", archetype: "jungle-fighter" },
+  Leona: { lane: "Support", archetype: "support-tank" },
+  Lillia: { lane: "Jungle", archetype: "jungle-ap" },
+  Lissandra: { lane: "Mid", archetype: "mid-mage" },
+  Lucian: { lane: "ADC", archetype: "adc-crit" },
+  Lulu: { lane: "Support", archetype: "support-enchanter" },
+  Lux: { lane: "Support", archetype: "support-mage" },
+  Malphite: { lane: "Top", archetype: "top-tank" },
+  Malzahar: { lane: "Mid", archetype: "mid-mage" },
+  Maokai: { lane: "Jungle", archetype: "jungle-tank" },
+  MasterYi: { lane: "Jungle", archetype: "jungle-assassin" },
+  Mel: { lane: "Mid", archetype: "mid-mage" },
+  Milio: { lane: "Support", archetype: "support-enchanter" },
+  MissFortune: { lane: "ADC", archetype: "adc-caster" },
+  MonkeyKing: { lane: "Jungle", archetype: "jungle-fighter" },
+  Mordekaiser: { lane: "Top", archetype: "top-ap" },
+  Morgana: { lane: "Support", archetype: "support-mage" },
+  Naafiri: { lane: "Mid", archetype: "mid-assassin" },
+  Nami: { lane: "Support", archetype: "support-enchanter" },
+  Nasus: { lane: "Top", archetype: "top-fighter" },
+  Nautilus: { lane: "Support", archetype: "support-tank" },
+  Neeko: { lane: "Mid", archetype: "mid-mage" },
+  Nidalee: { lane: "Jungle", archetype: "jungle-ap" },
+  Nilah: { lane: "ADC", archetype: "adc-crit" },
+  Nocturne: { lane: "Jungle", archetype: "jungle-fighter" },
+  Nunu: { lane: "Jungle", archetype: "jungle-tank" },
+  Olaf: { lane: "Top", archetype: "top-fighter" },
+  Orianna: { lane: "Mid", archetype: "mid-mage" },
+  Ornn: { lane: "Top", archetype: "top-tank" },
+  Pantheon: { lane: "Support", archetype: "support-pick" },
+  Poppy: { lane: "Jungle", archetype: "jungle-tank" },
+  Pyke: { lane: "Support", archetype: "support-pick" },
+  Qiyana: { lane: "Mid", archetype: "mid-assassin" },
+  Quinn: { lane: "Top", archetype: "top-marksman" },
+  Rakan: { lane: "Support", archetype: "support-tank" },
+  Rammus: { lane: "Jungle", archetype: "jungle-tank" },
+  RekSai: { lane: "Jungle", archetype: "jungle-fighter" },
+  Rell: { lane: "Support", archetype: "support-tank" },
+  Renata: { lane: "Support", archetype: "support-enchanter" },
+  Renekton: { lane: "Top", archetype: "top-fighter" },
+  Rengar: { lane: "Jungle", archetype: "jungle-assassin" },
+  Riven: { lane: "Top", archetype: "top-fighter" },
+  Rumble: { lane: "Top", archetype: "top-ap" },
+  Ryze: { lane: "Mid", archetype: "mid-scaling" },
+  Samira: { lane: "ADC", archetype: "adc-crit" },
+  Sejuani: { lane: "Jungle", archetype: "jungle-tank" },
+  Senna: { lane: "Support", archetype: "support-pick" },
+  Seraphine: { lane: "Support", archetype: "support-enchanter" },
+  Sett: { lane: "Top", archetype: "top-fighter" },
+  Shaco: { lane: "Jungle", archetype: "jungle-assassin" },
+  Shen: { lane: "Top", archetype: "top-tank" },
+  Shyvana: { lane: "Jungle", archetype: "jungle-fighter" },
+  Singed: { lane: "Top", archetype: "top-ap" },
+  Sion: { lane: "Top", archetype: "top-tank" },
+  Sivir: { lane: "ADC", archetype: "adc-crit" },
+  Skarner: { lane: "Jungle", archetype: "jungle-tank" },
+  Smolder: { lane: "ADC", archetype: "adc-caster" },
+  Sona: { lane: "Support", archetype: "support-enchanter" },
+  Soraka: { lane: "Support", archetype: "support-enchanter" },
+  Swain: { lane: "Support", archetype: "support-mage" },
+  Sylas: { lane: "Mid", archetype: "mid-assassin" },
+  Syndra: { lane: "Mid", archetype: "mid-mage" },
+  TahmKench: { lane: "Top", archetype: "top-tank" },
+  Taliyah: { lane: "Jungle", archetype: "jungle-ap" },
+  Talon: { lane: "Mid", archetype: "mid-assassin" },
+  Taric: { lane: "Support", archetype: "support-tank" },
+  Teemo: { lane: "Top", archetype: "top-ap" },
+  Thresh: { lane: "Support", archetype: "support-pick" },
+  Tristana: { lane: "ADC", archetype: "adc-crit" },
+  Trundle: { lane: "Jungle", archetype: "jungle-fighter" },
+  Tryndamere: { lane: "Top", archetype: "top-fighter" },
+  TwistedFate: { lane: "Mid", archetype: "mid-scaling" },
+  Twitch: { lane: "ADC", archetype: "adc-onhit" },
+  Udyr: { lane: "Jungle", archetype: "jungle-fighter" },
+  Urgot: { lane: "Top", archetype: "top-fighter" },
+  Varus: { lane: "ADC", archetype: "adc-caster" },
+  Vayne: { lane: "ADC", archetype: "adc-onhit" },
+  Veigar: { lane: "Mid", archetype: "mid-scaling" },
+  Velkoz: { lane: "Support", archetype: "support-mage" },
+  Vex: { lane: "Mid", archetype: "mid-mage" },
+  Vi: { lane: "Jungle", archetype: "jungle-fighter" },
+  Viego: { lane: "Jungle", archetype: "jungle-fighter" },
+  Viktor: { lane: "Mid", archetype: "mid-mage" },
+  Vladimir: { lane: "Mid", archetype: "mid-scaling" },
+  Volibear: { lane: "Top", archetype: "top-fighter" },
+  Warwick: { lane: "Jungle", archetype: "jungle-fighter" },
+  Xayah: { lane: "ADC", archetype: "adc-crit" },
+  Xerath: { lane: "Support", archetype: "support-mage" },
+  XinZhao: { lane: "Jungle", archetype: "jungle-fighter" },
+  Yasuo: { lane: "Mid", archetype: "mid-scaling" },
+  Yone: { lane: "Mid", archetype: "mid-scaling" },
+  Yorick: { lane: "Top", archetype: "top-fighter" },
+  Yunara: { lane: "ADC", archetype: "adc-crit" },
+  Yuumi: { lane: "Support", archetype: "support-enchanter" },
+  Zac: { lane: "Jungle", archetype: "jungle-tank" },
+  Zed: { lane: "Mid", archetype: "mid-assassin" },
+  Zeri: { lane: "ADC", archetype: "adc-crit" },
+  Ziggs: { lane: "ADC", archetype: "adc-caster" },
+  Zilean: { lane: "Support", archetype: "support-enchanter" },
+  Zoe: { lane: "Mid", archetype: "mid-mage" },
+  Zyra: { lane: "Support", archetype: "support-mage" },
+};
+
+export function getChampionProfile(id: string, tags: string[] = []): ChampionProfile {
+  const profile = championProfiles[id];
+  if (profile) return profile;
+
+  if (tags.includes("Marksman")) return { lane: "ADC", archetype: "adc-crit" };
+  if (tags.includes("Support")) return { lane: "Support", archetype: "support-enchanter" };
+  if (tags.includes("Assassin")) return { lane: "Mid", archetype: "mid-assassin" };
+  if (tags.includes("Mage")) return { lane: "Mid", archetype: "mid-mage" };
+  if (tags.includes("Tank")) return { lane: "Top", archetype: "top-tank" };
+  return { lane: "Top", archetype: "top-fighter" };
+}

@@ -1,5 +1,6 @@
 import { fetchChampionDetail, fetchChampionList } from "@/lib/ddragon";
 import { BuildOptionsPanel, type BuildOption } from "@/components/champion/BuildOptionsPanel";
+import { getChampionProfile, type ChampionArchetype, type PrimaryLane } from "@/lib/championProfiles";
 import {
   PATCH,
   cdnChampionSplash,
@@ -28,7 +29,7 @@ type SkillKey = "Q" | "W" | "E" | "R";
 type BasicSkillKey = "Q" | "W" | "E";
 type SimpleChampion = { id: string; name: string; title: string; tags: string[] };
 type SkillInfo = { key: "P" | SkillKey; name: string; description: string };
-type LaneId = "Top" | "Jungle" | "Mid" | "ADC" | "Support";
+type LaneId = PrimaryLane;
 type ChampionPreset = {
   lane: LaneId;
   starting: string[];
@@ -205,6 +206,171 @@ const championPresets: Record<string, ChampionPreset> = {
   Zyra: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3020", "3158"], core: ["6653", "3116", "4637"], situational: ["3157", "3135", "3089", "3165"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.comet },
 };
 
+const archetypeTemplates: Record<ChampionArchetype, Omit<ChampionPreset, "lane">> = {
+  "adc-crit": {
+    starting: ["1055", "2003"],
+    boots: ["3006", "3047"],
+    core: ["6672", "3031", "3036"],
+    situational: ["3072", "3094", "3026", "3139", "3153"],
+    spells: ["SummonerFlash.png", "SummonerBarrier.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.pta,
+  },
+  "adc-onhit": {
+    starting: ["1055", "2003"],
+    boots: ["3006", "3047"],
+    core: ["3153", "3124", "3085"],
+    situational: ["3091", "3036", "3072", "3139", "3026"],
+    spells: ["SummonerFlash.png", "SummonerBarrier.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.lethalTempo,
+  },
+  "adc-caster": {
+    starting: ["1055", "2003"],
+    boots: ["3009", "3158"],
+    core: ["3508", "3031", "6694"],
+    situational: ["6676", "3036", "3094", "3072", "3026"],
+    spells: ["SummonerFlash.png", "SummonerBarrier.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.fleet,
+  },
+  "support-enchanter": {
+    starting: ["3865", "2003", "2003"],
+    boots: ["3158", "3009"],
+    core: ["3870", "6617", "3107"],
+    situational: ["3504", "3222", "2065", "3109", "3190"],
+    spells: ["SummonerFlash.png", "SummonerExhaust.png"],
+    maxOrder: ["E", "W", "Q"],
+    runes: runePresets.aery,
+  },
+  "support-tank": {
+    starting: ["3865", "2003", "2003"],
+    boots: ["3047", "3111", "3009"],
+    core: ["3869", "3190", "3109"],
+    situational: ["3075", "3110", "2504", "3222", "3107"],
+    spells: ["SummonerFlash.png", "SummonerDot.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.aftershock,
+  },
+  "support-mage": {
+    starting: ["3865", "2003", "2003"],
+    boots: ["3020", "3158"],
+    core: ["6653", "3116", "4637"],
+    situational: ["3157", "3135", "3089", "3165", "3102"],
+    spells: ["SummonerFlash.png", "SummonerDot.png"],
+    maxOrder: ["E", "Q", "W"],
+    runes: runePresets.comet,
+  },
+  "support-pick": {
+    starting: ["3865", "2003", "2003"],
+    boots: ["3009", "3158"],
+    core: ["3877", "3190", "3109"],
+    situational: ["3142", "6694", "3075", "3110", "3222"],
+    spells: ["SummonerFlash.png", "SummonerDot.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.aftershock,
+  },
+  "jungle-assassin": {
+    starting: ["1101", "2003"],
+    boots: ["3158", "3009"],
+    core: ["3142", "6694", "6697"],
+    situational: ["3814", "3026", "3156", "6676", "3036"],
+    spells: ["SummonerFlash.png", "SummonerSmite.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.darkHarvest,
+  },
+  "jungle-fighter": {
+    starting: ["1101", "2003"],
+    boots: ["3047", "3111"],
+    core: ["6610", "3071", "3053"],
+    situational: ["6631", "6333", "3026", "3156", "3065"],
+    spells: ["SummonerFlash.png", "SummonerSmite.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.conqueror,
+  },
+  "jungle-tank": {
+    starting: ["1101", "2003"],
+    boots: ["3047", "3111"],
+    core: ["3068", "6665", "3075"],
+    situational: ["3110", "2504", "3001", "3065", "3143"],
+    spells: ["SummonerFlash.png", "SummonerSmite.png"],
+    maxOrder: ["W", "E", "Q"],
+    runes: runePresets.aftershock,
+  },
+  "jungle-ap": {
+    starting: ["1101", "2003"],
+    boots: ["3020", "3158"],
+    core: ["6653", "3116", "3157"],
+    situational: ["3089", "3135", "3102", "4637", "4645"],
+    spells: ["SummonerFlash.png", "SummonerSmite.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.darkHarvest,
+  },
+  "mid-mage": {
+    starting: ["1056", "2003", "2003"],
+    boots: ["3020", "3158"],
+    core: ["6655", "4645", "3089"],
+    situational: ["3157", "3135", "3102", "6653", "4628"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.aery,
+  },
+  "mid-assassin": {
+    starting: ["1036", "2003", "2003"],
+    boots: ["3158", "3020"],
+    core: ["3142", "6694", "6697"],
+    situational: ["3814", "3026", "3157", "3156", "4645"],
+    spells: ["SummonerFlash.png", "SummonerDot.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.electrocute,
+  },
+  "mid-scaling": {
+    starting: ["1056", "2003", "2003"],
+    boots: ["3020", "3158"],
+    core: ["6657", "3003", "3089"],
+    situational: ["3157", "3135", "3102", "3116", "4645"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["Q", "W", "E"],
+    runes: runePresets.fleet,
+  },
+  "top-fighter": {
+    starting: ["1054", "2003"],
+    boots: ["3047", "3111"],
+    core: ["6631", "6610", "3053"],
+    situational: ["3071", "6333", "3156", "3074", "3026"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.conqueror,
+  },
+  "top-tank": {
+    starting: ["1054", "2003"],
+    boots: ["3047", "3111"],
+    core: ["3068", "6665", "3075"],
+    situational: ["3084", "2504", "3110", "3143", "3065"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["W", "Q", "E"],
+    runes: runePresets.grasp,
+  },
+  "top-ap": {
+    starting: ["1056", "2003"],
+    boots: ["3020", "3047"],
+    core: ["4633", "3116", "3089"],
+    situational: ["3157", "3135", "3102", "6653", "3065"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.conqueror,
+  },
+  "top-marksman": {
+    starting: ["1055", "2003"],
+    boots: ["3006", "3047"],
+    core: ["6672", "3031", "3094"],
+    situational: ["3036", "3072", "3153", "3026", "3139"],
+    spells: ["SummonerFlash.png", "SummonerTeleport.png"],
+    maxOrder: ["Q", "E", "W"],
+    runes: runePresets.fleet,
+  },
+};
+
 export async function generateStaticParams() {
   const { data } = await fetchChampionList();
   return Object.keys(data).map((id) => ({ id }));
@@ -240,14 +406,6 @@ function seedOf(text: string) {
   return text.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
 
-function inferLane(tags: string[]): LaneId {
-  if (tags.includes("Marksman")) return "ADC";
-  if (tags.includes("Support")) return "Support";
-  if (tags.includes("Assassin") || tags.includes("Mage")) return "Mid";
-  if (tags.includes("Fighter") || tags.includes("Tank")) return "Top";
-  return "Mid";
-}
-
 function laneLabel(lane: LaneId) {
   const labels: Record<LaneId, string> = {
     Top: "Topo",
@@ -259,8 +417,32 @@ function laneLabel(lane: LaneId) {
   return labels[lane];
 }
 
+function archetypeLabel(archetype: ChampionArchetype) {
+  const labels: Record<ChampionArchetype, string> = {
+    "adc-crit": "ADC critico",
+    "adc-onhit": "ADC on-hit",
+    "adc-caster": "ADC utilidade",
+    "support-enchanter": "Encantador",
+    "support-tank": "Suporte tanque",
+    "support-mage": "Suporte mago",
+    "support-pick": "Pickoff",
+    "jungle-assassin": "Jungle assassino",
+    "jungle-fighter": "Jungle lutador",
+    "jungle-tank": "Jungle tanque",
+    "jungle-ap": "Jungle AP",
+    "mid-mage": "Mago mid",
+    "mid-assassin": "Assassino mid",
+    "mid-scaling": "Mid escala",
+    "top-fighter": "Topo lutador",
+    "top-tank": "Topo tanque",
+    "top-ap": "Topo AP",
+    "top-marksman": "Topo atirador",
+  };
+  return labels[archetype];
+}
+
 function sharesMatchupPool(a: string[], b: string[]) {
-  return inferLane(a) === inferLane(b) || a.some((tag) => b.includes(tag));
+  return a.some((tag) => b.includes(tag));
 }
 
 function basicRankLimit(level: number) {
@@ -364,28 +546,12 @@ function createMatchups(id: string, tags: string[], champions: SimpleChampion[])
 function getChampionBuildData(id: string, tags: string[], allChampions: SimpleChampion[]) {
   const seed = seedOf(id);
   const preset = championPresets[id];
-  const isMage = tags.includes("Mage");
-  const isAssassin = tags.includes("Assassin");
-  const isMarksman = tags.includes("Marksman");
-  const isTank = tags.includes("Tank");
-  const isSupport = tags.includes("Support");
-  const isFighter = tags.includes("Fighter");
+  const profile = getChampionProfile(id, tags);
 
   const winRate = 0.46 + (seed % 90) / 1000;
   const pickRate = 0.005 + (seed % 150) / 1000;
   const banRate = pickRate * 0.8;
   const tier: ChampionTier = seed % 10 === 0 ? "S+" : seed % 7 === 0 ? "S" : seed % 3 === 0 ? "A" : seed % 2 === 0 ? "B" : "C";
-
-  let startingItems = ["1054", "2003"];
-  let coreItems = ["3071", "3053", "3153"];
-  let boots = "3047";
-  let situationalItems = ["3075", "3068", "6665"];
-  let primaryPath = "Precision";
-  let keystone = "Conqueror";
-  let secondaryPath = "Resolve";
-  let runes = ["Triumph", "Legend: Alacrity", "Last Stand", "Second Wind", "Overgrowth"];
-  let shards: [string, string, string] = ["Attack Speed", "Adaptive Force", "Health per Level"];
-  let maxOrder: BasicSkillKey[] = ["Q", "E", "W"];
 
   if (preset) {
     return {
@@ -394,6 +560,7 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
       banRate,
       tier,
       lane: preset.lane,
+      archetype: profile.archetype,
       spells: preset.spells,
       runes: preset.runes,
       items: {
@@ -406,75 +573,34 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
       skillTimeline: createSkillTimeline(preset.maxOrder),
       maxOrder: preset.maxOrder,
       matchups: createMatchups(id, tags, allChampions),
-      source: "Blitz/OP.GG style preset",
+      source: "Curado por campeao com referencia OP.GG/Blitz",
     };
   }
 
-  if (isMage || (isAssassin && !isFighter && seed % 2 === 0)) {
-    startingItems = ["1056", "2003", "2003"];
-    coreItems = ["6655", "4645", "3089"];
-    boots = "3020";
-    situationalItems = ["3157", "3135", "3102", "6653"];
-    primaryPath = "Sorcery";
-    keystone = "Arcane Comet";
-    secondaryPath = "Inspiration";
-    runes = ["Manaflow Band", "Transcendence", "Scorch", "Triple Tonic", "Cosmic Insight"];
-    shards = ["Adaptive Force", "Adaptive Force", "Armor"];
-  } else if (isMarksman) {
-    startingItems = ["1055", "2003"];
-    coreItems = ["6672", "3031", "3036"];
-    boots = "3006";
-    situationalItems = ["3072", "3094", "3153", "3026"];
-    primaryPath = "Precision";
-    keystone = "Press the Attack";
-    secondaryPath = "Inspiration";
-    runes = ["Presence of Mind", "Legend: Bloodline", "Cut Down", "Magical Footwear", "Cosmic Insight"];
-    shards = ["Attack Speed", "Adaptive Force", "Armor"];
-  } else if (isTank) {
-    startingItems = ["1054", "2003"];
-    coreItems = ["3068", "6665", "3075"];
-    boots = "3111";
-    situationalItems = ["3109", "2504", "3001", "3110"];
-    primaryPath = "Resolve";
-    keystone = "Grasp of the Undying";
-    secondaryPath = "Precision";
-    runes = ["Shield Bash", "Second Wind", "Revitalize", "Triumph", "Legend: Tenacity"];
-    shards = ["Ability Haste", "Armor", "Health per Level"];
-    maxOrder = ["W", "Q", "E"];
-  } else if (isSupport) {
-    startingItems = ["3850", "2003", "2003"];
-    coreItems = ["3870", "3190", "3107"];
-    boots = "3158";
-    situationalItems = ["3504", "3110", "3222", "3109"];
-    primaryPath = "Sorcery";
-    keystone = "Summon Aery";
-    secondaryPath = "Inspiration";
-    runes = ["Manaflow Band", "Transcendence", "Gathering Storm", "Biscuit Delivery", "Cosmic Insight"];
-    shards = ["Ability Haste", "Adaptive Force", "Magic Resist"];
-    maxOrder = ["E", "W", "Q"];
-  }
-
-  if (seed % 3 === 1 && !isSupport) maxOrder = ["W", "Q", "E"];
-  if (seed % 3 === 2 && !isTank) maxOrder = ["E", "Q", "W"];
-
-  const spell1 = isSupport ? "SummonerExhaust" : isMage || isMarksman ? "SummonerFlash" : "SummonerTeleport";
-  const spell2 = isSupport ? "SummonerFlash" : isMage || isAssassin ? "SummonerDot" : "SummonerFlash";
-  const spell1Img = spell1 === "SummonerTeleport" ? "SummonerTeleport.png" : spell1 === "SummonerExhaust" ? "SummonerExhaust.png" : "SummonerFlash.png";
-  const spell2Img = spell2 === "SummonerDot" ? "SummonerDot.png" : "SummonerFlash.png";
+  const template = archetypeTemplates[profile.archetype];
+  const starting = profile.lane === "Jungle" ? ["1101", "2003"] : template.starting;
+  const spells = profile.lane === "Jungle" ? ["SummonerFlash.png", "SummonerSmite.png"] : template.spells;
 
   return {
     winRate,
     pickRate,
     banRate,
     tier,
-    lane: inferLane(tags),
-    spells: [spell1Img, spell2Img],
-    runes: { primaryPath, keystone, secondaryPath, runes, shards },
-    items: { starting: startingItems, core: coreItems, boots, bootOptions: [boots], situational: situationalItems },
-    skillTimeline: createSkillTimeline(maxOrder),
-    maxOrder,
+    lane: profile.lane,
+    archetype: profile.archetype,
+    spells,
+    runes: template.runes,
+    items: {
+      starting,
+      core: template.core,
+      boots: template.boots[0],
+      bootOptions: template.boots,
+      situational: template.situational,
+    },
+    skillTimeline: createSkillTimeline(template.maxOrder),
+    maxOrder: template.maxOrder,
     matchups: createMatchups(id, tags, allChampions),
-    source: "Tag fallback",
+    source: `Arquetipo ${archetypeLabel(profile.archetype)} com referencia OP.GG/Blitz`,
   };
 }
 
@@ -482,7 +608,7 @@ function uniqueItems(items: string[]) {
   return items.filter((item, index) => item && items.indexOf(item) === index);
 }
 
-function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeof getChampionBuildData>) {
+function createBuildOptions(id: string, traits: ReturnType<typeof getChampionBuildData>) {
   const seed = seedOf(id);
   const rate = (base: number, offset: number) => Number((base + ((seed + offset) % 32) / 10).toFixed(1));
   const games = (base: number, offset: number) => base + ((seed * offset) % 3800);
@@ -493,7 +619,18 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
 
   let options: BuildOption[];
 
-  if (tags.includes("Support")) {
+  const isSupport = traits.lane === "Support";
+  const isAdc = traits.lane === "ADC" || traits.archetype === "top-marksman";
+  const isMagicDamage =
+    traits.archetype === "mid-mage" ||
+    traits.archetype === "mid-assassin" ||
+    traits.archetype === "mid-scaling" ||
+    traits.archetype === "top-ap" ||
+    traits.archetype === "jungle-ap" ||
+    traits.archetype === "support-mage";
+  const isTank = traits.archetype === "top-tank" || traits.archetype === "jungle-tank" || traits.archetype === "support-tank";
+
+  if (isSupport) {
     options = [
       {
         id: "opgg-main",
@@ -535,7 +672,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         situational: uniqueItems(["3110", "3222", "3001", "3065", ...situational]).slice(0, 6),
       },
     ];
-  } else if (tags.includes("Marksman")) {
+  } else if (isAdc) {
     options = [
       {
         id: "crit-dps",
@@ -577,7 +714,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         situational: uniqueItems(["3139", "3156", "3036", "3094", ...situational]).slice(0, 6),
       },
     ];
-  } else if (tags.includes("Mage") || tags.includes("Assassin")) {
+  } else if (isMagicDamage) {
     options = [
       {
         id: "burst-meta",
@@ -619,7 +756,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         situational: uniqueItems(["3157", "3135", "3102", "4628", ...situational]).slice(0, 6),
       },
     ];
-  } else if (tags.includes("Tank")) {
+  } else if (isTank) {
     options = [
       {
         id: "frontline",
@@ -753,7 +890,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
   const allChampions = Object.values(championList.data);
   const traits = getChampionBuildData(champ.id, champ.tags, allChampions);
   const abilities = skillDetails(champ.passive, champ.spells);
-  const buildOptions = createBuildOptions(champ.id, champ.tags, traits);
+  const buildOptions = createBuildOptions(champ.id, traits);
   const splashUrl = cdnChampionSplash(champ.id, 0);
   const priorityLabel = traits.maxOrder.join(" > ");
 
@@ -774,6 +911,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
                 Tier {traits.tier}
               </span>
               <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/20 text-gold text-xs uppercase tracking-wide">{laneLabel(traits.lane)}</span>
+              <span className="px-2 py-0.5 rounded bg-win/10 border border-win/20 text-win text-xs uppercase tracking-wide">{archetypeLabel(traits.archetype)}</span>
               {champ.tags.map((tag) => (
                 <span key={tag} className="px-2 py-0.5 rounded bg-surface border border-border text-text-secondary text-xs uppercase tracking-wide">
                   {tag}

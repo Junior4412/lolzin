@@ -1,5 +1,6 @@
 import { fetchChampionList } from "@/lib/ddragon";
 import { ChampionGrid } from "@/components/champion/ChampionGrid";
+import { getChampionProfile } from "@/lib/championProfiles";
 import type { ChampionMeta, ChampionRole, ChampionTier } from "@/types";
 import type { Metadata } from "next";
 
@@ -36,13 +37,7 @@ export default async function ChampionsPage() {
     // Pick Rate (0.1% to 20%)
     const pickRate = 0.001 + ((seed % 200) / 200) * 0.2;
 
-    // Roles mapping from Riot tags
-    const roles: ChampionRole[] = [];
-    if (c.tags.includes("Fighter")) roles.push("Top", "Jungle");
-    if (c.tags.includes("Mage") || c.tags.includes("Assassin")) roles.push("Mid");
-    if (c.tags.includes("Marksman")) roles.push("ADC");
-    if (c.tags.includes("Support") || c.tags.includes("Tank")) roles.push("Support");
-    if (roles.length === 0) roles.push("Top"); // Fallback
+    const profile = getChampionProfile(c.id, c.tags);
 
     return {
       id: c.id,
@@ -52,7 +47,7 @@ export default async function ChampionsPage() {
       pickRate,
       banRate: pickRate * 0.8,
       trend: seed % 2 === 0 ? "up" : "down",
-      roles: roles.filter((v, i, a) => a.indexOf(v) === i) as ChampionRole[],
+      roles: [profile.lane] as ChampionRole[],
       tags: c.tags,
     };
   });
