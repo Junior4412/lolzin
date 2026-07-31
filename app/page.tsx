@@ -1,118 +1,114 @@
 import Link from "next/link";
-import { ArrowRight, Sword, BarChart2, Zap } from "lucide-react";
+import { ArrowRight, BarChart2, Crosshair, Layers, Search, Shield, Sparkles, Swords, Target, Zap } from "lucide-react";
 import { Button } from "@/components/ui";
+import { PATCH } from "@/lib/utils";
+
+const lanes = [
+  { label: "Top", icon: Shield, text: "Tanques, duelistas e side lane." },
+  { label: "Jungle", icon: Swords, text: "Rotas, objetivos e pressao de mapa." },
+  { label: "Mid", icon: Sparkles, text: "Controle, burst e roaming." },
+  { label: "ADC", icon: Target, text: "DPS, kiting e late game." },
+  { label: "Suporte", icon: Crosshair, text: "Visao, engage e peel." },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center">
-      
-      {/* Hero Section */}
-      <section className="relative w-full min-h-[90vh] flex flex-col items-center justify-center overflow-hidden px-4">
-        {/* Background Particles/Glow */}
-        <div className="absolute inset-0 bg-hero-gradient opacity-60 mix-blend-screen pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg')] bg-cover bg-center opacity-[0.03] pointer-events-none" />
-        
-        <div className="relative z-10 text-center max-w-4xl mx-auto flex flex-col items-center animate-slide-up">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gold/10 border border-gold/20 text-gold text-sm font-semibold tracking-wide mb-8 animate-pulse_gold">
-            <Zap className="w-4 h-4" />
-            <span>Patch 15.14 Disponível</span>
-          </div>
+    <div className="flex flex-col">
+      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg')] bg-cover bg-center opacity-35" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(79,195,247,0.18),transparent_32%),linear-gradient(90deg,rgba(3,6,14,0.98),rgba(3,6,14,0.78),rgba(3,6,14,0.96))]" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-void to-transparent" />
 
-          <h1 className="text-5xl md:text-7xl font-display font-black tracking-tight mb-6 leading-tight">
-            Domine o <span className="text-gold-gradient">Rift</span>. <br className="hidden md:block" />
-            Suba de <span className="text-arcane-bright">Elo</span>.
-          </h1>
-          
-          <p className="text-lg md:text-xl text-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
-            As builds mais precisas, tier lists atualizadas por patch e estatísticas detalhadas para o servidor BR. 
-            Tudo o que você precisa para alcançar o Desafiante.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            <Link href="/campeoes" className="w-full sm:w-auto">
-              <Button size="lg" variant="gold" className="w-full sm:w-auto text-lg px-8">
-                <Sword className="w-5 h-5 mr-2" />
-                Explorar Campeões
-              </Button>
-            </Link>
-            <Link href="/meta" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 bg-surface/50 backdrop-blur">
-                <BarChart2 className="w-5 h-5 mr-2" />
-                Ver Tier List
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="mt-12 text-sm text-text-muted flex items-center gap-2">
-            Pressione <kbd className="px-2 py-1 bg-elevated border border-border rounded font-mono text-text-secondary">⌘K</kbd> para buscar rapidamente
-          </div>
-        </div>
-      </section>
-
-      {/* Stats/Features Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-24 border-t border-border/50 relative">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-[1px] bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Builds Inteligentes",
-              desc: "Não copie cego. Entenda o porquê de cada item com nossa linha do tempo de build por minuto.",
-              icon: Layers,
-              color: "text-gold",
-              bg: "bg-gold/10",
-              border: "border-gold/20",
-            },
-            {
-              title: "Análise de Matchup",
-              desc: "Descubra quem countera quem e como jogar a fase de rotas com base em milhões de partidas.",
-              icon: Sword,
-              color: "text-arcane-bright",
-              bg: "bg-arcane-bright/10",
-              border: "border-arcane-bright/20",
-            },
-            {
-              title: "Simulador de Stats",
-              desc: "Monte sua build e veja o dano exato, vida e resistência antes de entrar na partida.",
-              icon: BarChart2,
-              color: "text-win",
-              bg: "bg-win/10",
-              border: "border-win/20",
-            }
-          ].map((feature, i) => (
-            <div key={i} className="glass p-8 rounded-xl border-border hover:border-border-bright transition-colors group">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center mb-6 border ${feature.bg} ${feature.border}`}>
-                <feature.icon className={`w-6 h-6 ${feature.color}`} />
-              </div>
-              <h3 className="text-xl font-display font-bold mb-3">{feature.title}</h3>
-              <p className="text-text-secondary leading-relaxed">{feature.desc}</p>
+        <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl flex-col justify-center px-4 py-16 sm:px-6">
+          <div className="max-w-3xl animate-slide-up">
+            <div className="mb-6 inline-flex items-center gap-2 rounded border border-gold/30 bg-gold/10 px-3 py-1.5 text-sm font-semibold text-gold">
+              <Zap className="h-4 w-4" />
+              Patch {PATCH} disponivel
             </div>
-          ))}
+
+            <h1 className="font-display text-5xl font-black leading-[1.05] md:text-7xl">
+              Domine o Rift com dados de <span className="text-gold-gradient">campeoes</span>, builds e jogadores.
+            </h1>
+
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text-secondary md:text-xl">
+              LOLZIN junta tier list por rota, builds inspiradas em OP.GG e Blitz, counters, ordem de habilidades e busca real de Riot ID em uma experiencia feita para League of Legends.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/estatisticas">
+                <Button size="lg" variant="gold" className="w-full sm:w-auto">
+                  <Search className="h-5 w-5" />
+                  Buscar jogador
+                </Button>
+              </Link>
+              <Link href="/meta">
+                <Button size="lg" variant="outline" className="w-full border-gold/25 bg-surface/70 sm:w-auto">
+                  <BarChart2 className="h-5 w-5" />
+                  Ver meta por lane
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-12 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              ["184", "paginas de campeoes"],
+              ["5", "lanes separadas"],
+              ["11", "regioes de perfil"],
+              ["3", "opcoes por build"],
+            ].map(([value, label]) => (
+              <div key={label} className="rounded border border-border bg-void/70 p-4 backdrop-blur">
+                <p className="font-mono text-2xl font-black text-gold">{value}</p>
+                <p className="mt-1 text-xs uppercase tracking-wider text-text-muted">{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
-      
-    </div>
-  );
-}
 
-// Emulate Lucide icon import for Layers
-function Layers(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polygon points="12 2 2 7 12 12 22 7 12 2" />
-      <polyline points="2 12 12 17 22 12" />
-      <polyline points="2 17 12 22 22 17" />
-    </svg>
+      <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 px-4 py-14 sm:px-6 md:grid-cols-5">
+        {lanes.map(({ label, icon: Icon, text }) => (
+          <Link key={label} href="/meta" className="group rounded-lg border border-border bg-surface p-5 transition hover:border-gold/50 hover:bg-elevated/60">
+            <Icon className="h-6 w-6 text-gold" />
+            <h2 className="mt-4 font-display text-xl font-bold group-hover:text-gold">{label}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
+          </Link>
+        ))}
+      </section>
+
+      <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 pb-16 sm:px-6 lg:grid-cols-3">
+        {[
+          {
+            href: "/campeoes",
+            title: "Campeoes completos",
+            text: "Veja todos os campeoes, filtrados por lane principal, tier e popularidade.",
+            icon: Swords,
+          },
+          {
+            href: "/builds",
+            title: "Builds montaveis",
+            text: "Escolha entre linhas meta, anti-frontline, burst, seguranca e situacionais.",
+            icon: Layers,
+          },
+          {
+            href: "/estatisticas",
+            title: "Perfil de jogador",
+            text: "Consulte Riot ID por regiao e veja historico, campeoes e estatisticas recentes.",
+            icon: Search,
+          },
+        ].map(({ href, title, text, icon: Icon }) => (
+          <Link key={title} href={href} className="group relative overflow-hidden rounded-lg border border-border bg-surface p-6 shadow-card transition hover:border-gold/50">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent opacity-0 transition group-hover:opacity-100" />
+            <Icon className="h-7 w-7 text-gold" />
+            <h2 className="mt-5 font-display text-2xl font-bold">{title}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-text-secondary">{text}</p>
+            <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
+              Abrir
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
+        ))}
+      </section>
+    </div>
   );
 }

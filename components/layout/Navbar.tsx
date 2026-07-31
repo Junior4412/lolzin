@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { cn, normalizeStr, cdnChampionSquare } from "@/lib/utils";
+import { cn, normalizeStr, cdnChampionSquare, PATCH } from "@/lib/utils";
 import {
   Search,
   Sword,
@@ -15,9 +15,6 @@ import {
   Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Patch constant from ddragon
-const CURRENT_PATCH = "15.14";
 
 const navLinks = [
   { href: "/campeoes", label: "Campeões", icon: Sword },
@@ -76,7 +73,7 @@ export default function Navbar() {
       setLoading(true);
       try {
         const res = await fetch(
-          `https://ddragon.leagueoflegends.com/cdn/15.14.1/data/pt_BR/champion.json`,
+          `https://ddragon.leagueoflegends.com/cdn/${PATCH}/data/pt_BR/champion.json`,
           { cache: "force-cache" }
         );
         const json = await res.json();
@@ -86,7 +83,7 @@ export default function Navbar() {
           .map((c) => ({
             id: c.id,
             name: c.name,
-            image: cdnChampionSquare("15.14.1", c.id),
+            image: cdnChampionSquare(PATCH, c.id),
             subtitle: c.title,
           }));
         setResults(filtered);
@@ -145,7 +142,7 @@ export default function Navbar() {
           {/* Patch badge */}
           <div className="hidden lg:flex items-center gap-1.5 bg-gold/10 border border-gold/20 rounded px-2.5 py-1">
             <div className="w-1.5 h-1.5 rounded-full bg-win animate-pulse" />
-            <span className="text-xs font-mono text-gold">Patch {CURRENT_PATCH}</span>
+            <span className="text-xs font-mono text-gold">Patch {PATCH}</span>
           </div>
 
           {/* Search button */}
