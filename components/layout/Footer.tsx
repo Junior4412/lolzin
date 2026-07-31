@@ -60,7 +60,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-text-muted text-xs text-center md:text-left leading-relaxed">
-            LOLZIN isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. 
+            LOLZIN is not endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. 
             <br className="hidden md:block" />
             League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc.
           </p>

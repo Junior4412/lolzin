@@ -68,10 +68,12 @@ export default function Navbar() {
 
   // Live search
   useEffect(() => {
-    if (!searchQuery.trim()) { setResults([]); return; }
+    if (!searchQuery.trim()) {
+      return;
+    }
     const norm = normalizeStr(searchQuery);
-    setLoading(true);
     const timer = setTimeout(async () => {
+      setLoading(true);
       try {
         const res = await fetch(
           `https://ddragon.leagueoflegends.com/cdn/15.14.1/data/pt_BR/champion.json`,
@@ -88,11 +90,16 @@ export default function Navbar() {
             subtitle: c.title,
           }));
         setResults(filtered);
-      } catch { setResults([]); }
+      } catch {
+        setResults([]);
+      }
       setLoading(false);
     }, 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  const visibleResults = searchQuery.trim() ? results : [];
+  const isSearching = Boolean(searchQuery.trim()) && loading;
 
   return (
     <>
@@ -236,18 +243,18 @@ export default function Navbar() {
 
               {/* Results */}
               <div className="max-h-72 overflow-y-auto">
-                {loading && (
+                {isSearching && (
                   <div className="p-4 flex items-center justify-center">
                     <div className="w-5 h-5 border-2 border-border border-t-gold rounded-full animate-spin" />
                   </div>
                 )}
-                {!loading && results.length === 0 && searchQuery && (
+                {!isSearching && visibleResults.length === 0 && searchQuery && (
                   <p className="text-center text-text-muted text-sm py-6">Nenhum campeão encontrado</p>
                 )}
-                {!loading && results.length === 0 && !searchQuery && (
+                {!isSearching && visibleResults.length === 0 && !searchQuery && (
                   <p className="text-center text-text-muted text-sm py-6">Digite para buscar campeões...</p>
                 )}
-                {results.map((r) => (
+                {visibleResults.map((r) => (
                   <Link
                     key={r.id}
                     href={`/campeoes/${r.id}`}

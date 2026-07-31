@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { ChampionCard } from "./ChampionCard";
 import { useFiltersStore, useFavoritesStore } from "@/stores";
 import { normalizeStr, PATCH } from "@/lib/utils";
@@ -31,10 +31,7 @@ const TIERS = [
 
 export function ChampionGrid({ champions }: ChampionGridProps) {
   const { role, tier, search, sortBy, setRole, setTier, setSearch, setSortBy, reset } = useFiltersStore();
-  const { favorites } = useFavoritesStore();
-  
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useFavoritesStore();
 
   const filtered = useMemo(() => {
     let result = champions;
@@ -65,8 +62,6 @@ export function ChampionGrid({ champions }: ChampionGridProps) {
 
     return result;
   }, [champions, role, tier, search, sortBy]);
-
-  if (!mounted) return null;
 
   return (
     <div className="space-y-6">

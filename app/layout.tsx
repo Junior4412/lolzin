@@ -1,23 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Cinzel, Inter } from "next/font/google";
 import { Providers } from "@/app/providers";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
-
-const displayFont = Cinzel({
-  subsets: ["latin"],
-  variable: "--font-display-var",
-  weight: ["400", "600", "700", "800", "900"],
-  display: "swap",
-});
-
-const bodyFont = Inter({
-  subsets: ["latin"],
-  variable: "--font-body-var",
-  weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: {
@@ -74,10 +59,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${displayFont.variable} ${bodyFont.variable}`}
-    >
+    <html lang="pt-BR">
       <body className="antialiased bg-void text-text-primary font-body">
         <div className="bg-ambient" aria-hidden="true" />
         <Providers>
