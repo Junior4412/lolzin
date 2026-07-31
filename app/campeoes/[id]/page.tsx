@@ -28,12 +28,181 @@ type SkillKey = "Q" | "W" | "E" | "R";
 type BasicSkillKey = "Q" | "W" | "E";
 type SimpleChampion = { id: string; name: string; title: string; tags: string[] };
 type SkillInfo = { key: "P" | SkillKey; name: string; description: string };
+type LaneId = "Top" | "Jungle" | "Mid" | "ADC" | "Support";
+type ChampionPreset = {
+  lane: LaneId;
+  starting: string[];
+  boots: string[];
+  core: string[];
+  situational: string[];
+  spells: string[];
+  maxOrder: BasicSkillKey[];
+  runes: {
+    primaryPath: string;
+    keystone: string;
+    secondaryPath: string;
+    runes: string[];
+    shards: [string, string, string];
+  };
+};
 type MatchupGuide = {
   championId: string;
   championName: string;
   difficulty: "easy" | "medium" | "hard";
   score: number;
   tips: string[];
+};
+
+const runePresets = {
+  conqueror: {
+    primaryPath: "Precision",
+    keystone: "Conqueror",
+    secondaryPath: "Resolve",
+    runes: ["Triumph", "Legend: Haste", "Last Stand", "Second Wind", "Overgrowth"],
+    shards: ["Attack Speed", "Adaptive Force", "Health per Level"] as [string, string, string],
+  },
+  fleet: {
+    primaryPath: "Precision",
+    keystone: "Fleet Footwork",
+    secondaryPath: "Sorcery",
+    runes: ["Presence of Mind", "Legend: Bloodline", "Cut Down", "Celerity", "Gathering Storm"],
+    shards: ["Attack Speed", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  pta: {
+    primaryPath: "Precision",
+    keystone: "Press the Attack",
+    secondaryPath: "Inspiration",
+    runes: ["Presence of Mind", "Legend: Alacrity", "Cut Down", "Magical Footwear", "Biscuit Delivery"],
+    shards: ["Attack Speed", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  lethalTempo: {
+    primaryPath: "Precision",
+    keystone: "Lethal Tempo",
+    secondaryPath: "Resolve",
+    runes: ["Triumph", "Legend: Alacrity", "Last Stand", "Bone Plating", "Overgrowth"],
+    shards: ["Attack Speed", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  comet: {
+    primaryPath: "Sorcery",
+    keystone: "Arcane Comet",
+    secondaryPath: "Inspiration",
+    runes: ["Manaflow Band", "Transcendence", "Scorch", "Biscuit Delivery", "Cosmic Insight"],
+    shards: ["Adaptive Force", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  electrocute: {
+    primaryPath: "Domination",
+    keystone: "Electrocute",
+    secondaryPath: "Sorcery",
+    runes: ["Sudden Impact", "Grisly Mementos", "Ultimate Hunter", "Transcendence", "Scorch"],
+    shards: ["Adaptive Force", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  darkHarvest: {
+    primaryPath: "Domination",
+    keystone: "Dark Harvest",
+    secondaryPath: "Precision",
+    runes: ["Cheap Shot", "Grisly Mementos", "Treasure Hunter", "Presence of Mind", "Coup de Grace"],
+    shards: ["Adaptive Force", "Adaptive Force", "Health"] as [string, string, string],
+  },
+  grasp: {
+    primaryPath: "Resolve",
+    keystone: "Grasp of the Undying",
+    secondaryPath: "Precision",
+    runes: ["Demolish", "Second Wind", "Overgrowth", "Triumph", "Legend: Haste"],
+    shards: ["Attack Speed", "Adaptive Force", "Health per Level"] as [string, string, string],
+  },
+  aftershock: {
+    primaryPath: "Resolve",
+    keystone: "Aftershock",
+    secondaryPath: "Inspiration",
+    runes: ["Font of Life", "Bone Plating", "Unflinching", "Biscuit Delivery", "Cosmic Insight"],
+    shards: ["Ability Haste", "Health per Level", "Health"] as [string, string, string],
+  },
+  guardian: {
+    primaryPath: "Resolve",
+    keystone: "Guardian",
+    secondaryPath: "Inspiration",
+    runes: ["Font of Life", "Bone Plating", "Unflinching", "Biscuit Delivery", "Cosmic Insight"],
+    shards: ["Attack Speed", "Health per Level", "Health per Level"] as [string, string, string],
+  },
+  aery: {
+    primaryPath: "Sorcery",
+    keystone: "Summon Aery",
+    secondaryPath: "Resolve",
+    runes: ["Manaflow Band", "Transcendence", "Gathering Storm", "Bone Plating", "Revitalize"],
+    shards: ["Ability Haste", "Adaptive Force", "Health"] as [string, string, string],
+  },
+};
+
+const championPresets: Record<string, ChampionPreset> = {
+  Aatrox: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["6692", "6610", "3053"], situational: ["3071", "6333", "3156", "3074", "3026"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Ahri: { lane: "Mid", starting: ["1056", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "6653", "4628"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.electrocute },
+  Akali: { lane: "Mid", starting: ["1054", "2003"], boots: ["3020", "3111"], core: ["4646", "4645", "3157"], situational: ["3089", "3102", "3135", "4633"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.electrocute },
+  Ambessa: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["6692", "6610", "3071"], situational: ["3053", "6333", "3156", "3074"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Amumu: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["6653", "3068", "6665"], situational: ["3075", "3110", "2504", "3001"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.aftershock },
+  Aphelios: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3036"], situational: ["3072", "3094", "3153", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Ashe: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3009"], core: ["6672", "3031", "3094"], situational: ["3036", "3072", "3153", "3124"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["W", "Q", "E"], runes: runePresets.pta },
+  Bard: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3158"], core: ["3877", "3190", "3107"], situational: ["3109", "3110", "3222", "2065"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.guardian },
+  Blitzcrank: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3158"], core: ["3869", "3190", "3050"], situational: ["3109", "3110", "3222", "3075"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.aftershock },
+  Brand: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3020", "3158"], core: ["6653", "3116", "4637"], situational: ["3157", "3135", "3089", "3165"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["W", "Q", "E"], runes: runePresets.darkHarvest },
+  Braum: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3047", "3111", "3009"], core: ["3876", "3190", "3109"], situational: ["3075", "3110", "2504", "3222", "3107"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.guardian },
+  Caitlyn: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3009"], core: ["6676", "3031", "3094"], situational: ["3036", "3072", "3026", "6675"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.fleet },
+  Darius: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["6631", "3053", "3742"], situational: ["6333", "3075", "3065", "3026"], spells: ["SummonerFlash.png", "SummonerHaste.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Draven: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6676", "3031", "3072"], situational: ["3036", "3094", "3026", "3153"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.pta },
+  Ezreal: { lane: "ADC", starting: ["1055", "2003"], boots: ["3158", "3047"], core: ["3078", "3004", "6694"], situational: ["3071", "3156", "3026", "3139"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Fiora: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["3074", "3078", "6632"], situational: ["3053", "6333", "3156", "3026"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.grasp },
+  Garen: { lane: "Top", starting: ["1054", "2003"], boots: ["3006", "3047"], core: ["6631", "3046", "3742"], situational: ["3053", "3075", "3026", "3143"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.conqueror },
+  Graves: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3009", "3047"], core: ["3142", "6676", "3031"], situational: ["3036", "3026", "3156", "6694"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.fleet },
+  Gwen: { lane: "Top", starting: ["1056", "2003"], boots: ["3020", "3047"], core: ["4633", "3115", "3089"], situational: ["3157", "3135", "3102", "6653"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Hecarim: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3158", "3047"], core: ["6692", "3071", "3161"], situational: ["3053", "6333", "3065", "3156"], spells: ["SummonerHaste.png", "SummonerSmite.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.conqueror },
+  Irelia: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["3153", "6672", "3091"], situational: ["3053", "6333", "3026", "3156"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.conqueror },
+  Janna: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "3107"], situational: ["3504", "3222", "2065", "3109"], spells: ["SummonerFlash.png", "SummonerExhaust.png"], maxOrder: ["E", "W", "Q"], runes: runePresets.aery },
+  JarvanIV: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["6610", "3071", "3053"], situational: ["6333", "3026", "3075", "3065"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Jax: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["3078", "6610", "3053"], situational: ["3153", "3071", "6333", "3026"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["W", "E", "Q"], runes: runePresets.lethalTempo },
+  Jhin: { lane: "ADC", starting: ["1055", "2003"], boots: ["3009", "3047"], core: ["6697", "6676", "3031"], situational: ["3036", "3094", "3026", "3072", "3139"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.fleet },
+  Jinx: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3085", "3031"], situational: ["3036", "3072", "3094", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.lethalTempo },
+  Kaisa: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3124", "3115"], situational: ["3089", "3135", "3026", "3072"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Karma: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "2065"], situational: ["3107", "3504", "3222", "3109"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.aery },
+  Kayn: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3158", "3047"], core: ["6692", "3071", "6694"], situational: ["6610", "6333", "3026", "3156"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.conqueror },
+  Khazix: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3158", "3009"], core: ["3142", "6694", "6697"], situational: ["6676", "3026", "3814", "3156"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.darkHarvest },
+  Leblanc: { lane: "Mid", starting: ["1056", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "4646"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["W", "Q", "E"], runes: runePresets.electrocute },
+  LeeSin: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["6692", "6610", "3071"], situational: ["3053", "6333", "3026", "3156"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.conqueror },
+  Leona: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3047", "3111"], core: ["3869", "3190", "3050"], situational: ["3109", "3075", "3110", "3222"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["W", "E", "Q"], runes: runePresets.aftershock },
+  Lucian: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3508", "3031", "6675"], situational: ["3036", "3072", "3094", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Lulu: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "3504"], situational: ["3107", "3222", "2065", "3109"], spells: ["SummonerFlash.png", "SummonerExhaust.png"], maxOrder: ["E", "W", "Q"], runes: runePresets.aery },
+  Lux: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "6653"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.comet },
+  MasterYi: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3006", "3047"], core: ["3153", "3124", "3091"], situational: ["6672", "3026", "3139", "6333"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  MissFortune: { lane: "ADC", starting: ["1055", "2003"], boots: ["3009", "3006"], core: ["3142", "6676", "6694"], situational: ["3031", "3036", "3072", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.pta },
+  Mordekaiser: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["3116", "4633", "6653"], situational: ["3157", "3065", "3075", "3089"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Nami: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "4005"], situational: ["3107", "3504", "3222", "2065"], spells: ["SummonerFlash.png", "SummonerExhaust.png"], maxOrder: ["W", "E", "Q"], runes: runePresets.aery },
+  Nautilus: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3047", "3111"], core: ["3869", "3190", "3050"], situational: ["3109", "3075", "3110", "3222"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["E", "W", "Q"], runes: runePresets.aftershock },
+  Nocturne: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["6631", "3161", "3053"], situational: ["6333", "3026", "3156", "3071"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Orianna: { lane: "Mid", starting: ["1056", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "6653"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.aery },
+  Pantheon: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3047"], core: ["3877", "3142", "3071"], situational: ["6694", "3109", "3026", "6333"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Pyke: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3158"], core: ["3877", "3179", "3142"], situational: ["6694", "3814", "3026", "6676"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.electrocute },
+  Rakan: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "3107", "3190"], situational: ["3109", "3222", "2065", "3504"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["W", "E", "Q"], runes: runePresets.guardian },
+  Rammus: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["3075", "3068", "6665"], situational: ["3110", "2504", "3001", "3065"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["W", "E", "Q"], runes: runePresets.aftershock },
+  Renekton: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["6692", "3071", "3053"], situational: ["6333", "3026", "3156", "3074"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.pta },
+  Riven: { lane: "Top", starting: ["1054", "2003"], boots: ["3158", "3047"], core: ["6692", "6610", "3071"], situational: ["3053", "6333", "3026", "3156"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Samira: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6676", "3031", "3072"], situational: ["3036", "3026", "3139", "3156"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Senna: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3158"], core: ["3877", "3142", "3094"], situational: ["6676", "3036", "3109", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.fleet },
+  Seraphine: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "3107"], situational: ["3504", "3222", "2065", "6653"], spells: ["SummonerFlash.png", "SummonerExhaust.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.aery },
+  Sett: { lane: "Top", starting: ["1054", "2003"], boots: ["3047", "3111"], core: ["6631", "3053", "3742"], situational: ["6333", "3075", "3026", "3065"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.conqueror },
+  Sona: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "3107"], situational: ["3504", "3222", "2065", "3109"], spells: ["SummonerFlash.png", "SummonerExhaust.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.aery },
+  Soraka: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158", "3009"], core: ["3870", "6617", "3107"], situational: ["3504", "3222", "2065", "3109"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["W", "Q", "E"], runes: runePresets.aery },
+  Thresh: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3009", "3047"], core: ["3869", "3190", "3109"], situational: ["3075", "3110", "3222", "3107"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.aftershock },
+  Tristana: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3094"], situational: ["3036", "3072", "3026", "6675"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.pta },
+  Varus: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3009"], core: ["3153", "3124", "3085"], situational: ["3036", "3072", "3094", "3139"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Vayne: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3153", "3124", "3085"], situational: ["3036", "3072", "3026", "3139"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "W", "E"], runes: runePresets.lethalTempo },
+  Vi: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3111"], core: ["6610", "3071", "3053"], situational: ["6333", "3026", "3156", "3075"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Viego: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3006"], core: ["3153", "6610", "3053"], situational: ["3071", "3026", "6333", "3124"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
+  Viktor: { lane: "Mid", starting: ["1056", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "6653"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.aery },
+  Xayah: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3508", "3031", "3094"], situational: ["3036", "3072", "3026", "6675"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["E", "W", "Q"], runes: runePresets.lethalTempo },
+  Yasuo: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3153"], situational: ["3026", "3036", "3072", "6333"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Yone: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3153"], situational: ["3026", "3036", "3072", "6333"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Yuumi: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158"], core: ["3870", "6617", "3504"], situational: ["3107", "3222", "2065", "3109"], spells: ["SummonerExhaust.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.aery },
+  Zed: { lane: "Mid", starting: ["1036", "2003", "2003"], boots: ["3158", "3009"], core: ["3142", "6694", "6697"], situational: ["3814", "3026", "3156", "6676"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.electrocute },
+  Zeri: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3085", "3031"], situational: ["3036", "3072", "3094", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Zyra: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3020", "3158"], core: ["6653", "3116", "4637"], situational: ["3157", "3135", "3089", "3165"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.comet },
 };
 
 export async function generateStaticParams() {
@@ -71,12 +240,23 @@ function seedOf(text: string) {
   return text.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
 
-function inferLane(tags: string[]) {
+function inferLane(tags: string[]): LaneId {
   if (tags.includes("Marksman")) return "ADC";
-  if (tags.includes("Support")) return "Suporte";
-  if (tags.includes("Assassin") || tags.includes("Mage")) return "Meio";
-  if (tags.includes("Fighter") || tags.includes("Tank")) return "Topo";
-  return "Flex";
+  if (tags.includes("Support")) return "Support";
+  if (tags.includes("Assassin") || tags.includes("Mage")) return "Mid";
+  if (tags.includes("Fighter") || tags.includes("Tank")) return "Top";
+  return "Mid";
+}
+
+function laneLabel(lane: LaneId) {
+  const labels: Record<LaneId, string> = {
+    Top: "Topo",
+    Jungle: "Selva",
+    Mid: "Meio",
+    ADC: "ADC",
+    Support: "Suporte",
+  };
+  return labels[lane];
 }
 
 function sharesMatchupPool(a: string[], b: string[]) {
@@ -183,6 +363,7 @@ function createMatchups(id: string, tags: string[], champions: SimpleChampion[])
 
 function getChampionBuildData(id: string, tags: string[], allChampions: SimpleChampion[]) {
   const seed = seedOf(id);
+  const preset = championPresets[id];
   const isMage = tags.includes("Mage");
   const isAssassin = tags.includes("Assassin");
   const isMarksman = tags.includes("Marksman");
@@ -206,11 +387,34 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
   let shards: [string, string, string] = ["Attack Speed", "Adaptive Force", "Health per Level"];
   let maxOrder: BasicSkillKey[] = ["Q", "E", "W"];
 
+  if (preset) {
+    return {
+      winRate,
+      pickRate,
+      banRate,
+      tier,
+      lane: preset.lane,
+      spells: preset.spells,
+      runes: preset.runes,
+      items: {
+        starting: preset.starting,
+        core: preset.core,
+        boots: preset.boots[0],
+        bootOptions: preset.boots,
+        situational: preset.situational,
+      },
+      skillTimeline: createSkillTimeline(preset.maxOrder),
+      maxOrder: preset.maxOrder,
+      matchups: createMatchups(id, tags, allChampions),
+      source: "Blitz/OP.GG style preset",
+    };
+  }
+
   if (isMage || (isAssassin && !isFighter && seed % 2 === 0)) {
     startingItems = ["1056", "2003", "2003"];
-    coreItems = ["6655", "3089", "3151"];
+    coreItems = ["6655", "4645", "3089"];
     boots = "3020";
-    situationalItems = ["3157", "3135", "3001"];
+    situationalItems = ["3157", "3135", "3102", "6653"];
     primaryPath = "Sorcery";
     keystone = "Arcane Comet";
     secondaryPath = "Inspiration";
@@ -218,9 +422,9 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
     shards = ["Adaptive Force", "Adaptive Force", "Armor"];
   } else if (isMarksman) {
     startingItems = ["1055", "2003"];
-    coreItems = ["6672", "3031", "3072"];
+    coreItems = ["6672", "3031", "3036"];
     boots = "3006";
-    situationalItems = ["3036", "3046", "3153"];
+    situationalItems = ["3072", "3094", "3153", "3026"];
     primaryPath = "Precision";
     keystone = "Press the Attack";
     secondaryPath = "Inspiration";
@@ -230,7 +434,7 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
     startingItems = ["1054", "2003"];
     coreItems = ["3068", "6665", "3075"];
     boots = "3111";
-    situationalItems = ["3109", "4401", "3001"];
+    situationalItems = ["3109", "2504", "3001", "3110"];
     primaryPath = "Resolve";
     keystone = "Grasp of the Undying";
     secondaryPath = "Precision";
@@ -239,9 +443,9 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
     maxOrder = ["W", "Q", "E"];
   } else if (isSupport) {
     startingItems = ["3850", "2003", "2003"];
-    coreItems = ["2065", "3107", "3190"];
+    coreItems = ["3870", "3190", "3107"];
     boots = "3158";
-    situationalItems = ["3504", "3110", "3222"];
+    situationalItems = ["3504", "3110", "3222", "3109"];
     primaryPath = "Sorcery";
     keystone = "Summon Aery";
     secondaryPath = "Inspiration";
@@ -266,10 +470,11 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
     lane: inferLane(tags),
     spells: [spell1Img, spell2Img],
     runes: { primaryPath, keystone, secondaryPath, runes, shards },
-    items: { starting: startingItems, core: coreItems, boots, situational: situationalItems },
+    items: { starting: startingItems, core: coreItems, boots, bootOptions: [boots], situational: situationalItems },
     skillTimeline: createSkillTimeline(maxOrder),
     maxOrder,
     matchups: createMatchups(id, tags, allChampions),
+    source: "Tag fallback",
   };
 }
 
@@ -283,7 +488,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
   const games = (base: number, offset: number) => base + ((seed * offset) % 3800);
   const starting = traits.items.starting;
   const baseCore = traits.items.core;
-  const baseBoots = [traits.items.boots];
+  const baseBoots = traits.items.bootOptions;
   const situational = traits.items.situational;
 
   let options: BuildOption[];
@@ -299,7 +504,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.2, 11),
         games: games(18000, 17),
         starting,
-        boots: uniqueItems([traits.items.boots, "3047", "3111"]).slice(0, 3),
+        boots: uniqueItems([...baseBoots, "3047", "3111"]).slice(0, 3),
         core: uniqueItems(["3190", "3109", baseCore[0], baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3075", "3110", "3222", "3504", "3001", ...situational]).slice(0, 6),
       },
@@ -312,7 +517,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.6, 19),
         games: games(9200, 23),
         starting,
-        boots: uniqueItems(["3158", traits.items.boots, "3047"]).slice(0, 3),
+        boots: uniqueItems(["3158", ...baseBoots, "3047"]).slice(0, 3),
         core: uniqueItems(["2065", "3190", "3107", baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["3109", "3110", "3222", "3075", ...situational]).slice(0, 6),
       },
@@ -325,7 +530,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(52, 29),
         games: games(6400, 31),
         starting,
-        boots: uniqueItems(["3047", "3111", traits.items.boots]).slice(0, 3),
+        boots: uniqueItems(["3047", "3111", ...baseBoots]).slice(0, 3),
         core: uniqueItems(["3109", "3190", "3075", baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["3110", "3222", "3001", "3065", ...situational]).slice(0, 6),
       },
@@ -341,8 +546,8 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.8, 11),
         games: games(22000, 17),
         starting,
-        boots: uniqueItems([traits.items.boots, "3006", "3047"]).slice(0, 3),
-        core: uniqueItems([baseCore[0], "3031", "3036", baseCore[1]]).slice(0, 3),
+        boots: uniqueItems([...baseBoots, "3006", "3047"]).slice(0, 3),
+        core: uniqueItems([baseCore[0], baseCore[1], baseCore[2], "3031"]).slice(0, 3),
         situational: uniqueItems(["3072", "3094", "3046", "3153", ...situational]).slice(0, 6),
       },
       {
@@ -354,7 +559,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.4, 23),
         games: games(9800, 19),
         starting,
-        boots: uniqueItems(["3006", traits.items.boots]).slice(0, 2),
+        boots: uniqueItems(["3006", ...baseBoots]).slice(0, 2),
         core: uniqueItems(["3153", "6672", "3036", baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["3124", "3094", "3072", "3139", ...situational]).slice(0, 6),
       },
@@ -367,7 +572,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.9, 31),
         games: games(7200, 29),
         starting,
-        boots: uniqueItems(["3047", traits.items.boots, "3111"]).slice(0, 3),
+        boots: uniqueItems(["3047", ...baseBoots, "3111"]).slice(0, 3),
         core: uniqueItems([baseCore[0], "3072", "3026", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3139", "3156", "3036", "3094", ...situational]).slice(0, 6),
       },
@@ -383,7 +588,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.7, 11),
         games: games(16000, 17),
         starting,
-        boots: uniqueItems([traits.items.boots, "3020", "3158"]).slice(0, 3),
+        boots: uniqueItems([...baseBoots, "3020", "3158"]).slice(0, 3),
         core: uniqueItems([baseCore[0], "3089", "3135", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3157", "3102", "3116", "4628", ...situational]).slice(0, 6),
       },
@@ -396,7 +601,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.1, 19),
         games: games(8600, 23),
         starting,
-        boots: uniqueItems(["3158", traits.items.boots, "3020"]).slice(0, 3),
+        boots: uniqueItems(["3158", ...baseBoots, "3020"]).slice(0, 3),
         core: uniqueItems([baseCore[0], "3157", "3116", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3135", "3102", "3089", "6653", ...situational]).slice(0, 6),
       },
@@ -409,7 +614,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.4, 29),
         games: games(5900, 31),
         starting,
-        boots: uniqueItems(["3020", traits.items.boots]).slice(0, 2),
+        boots: uniqueItems(["3020", ...baseBoots]).slice(0, 2),
         core: uniqueItems(["4645", baseCore[0], "3089", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3157", "3135", "3102", "4628", ...situational]).slice(0, 6),
       },
@@ -425,7 +630,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.3, 11),
         games: games(14000, 17),
         starting,
-        boots: uniqueItems([traits.items.boots, "3047", "3111"]).slice(0, 3),
+        boots: uniqueItems([...baseBoots, "3047", "3111"]).slice(0, 3),
         core: uniqueItems([baseCore[0], baseCore[1], "3075", "3068"]).slice(0, 3),
         situational: uniqueItems(["3110", "4401", "3143", "3065", ...situational]).slice(0, 6),
       },
@@ -438,7 +643,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(52, 23),
         games: games(7900, 19),
         starting,
-        boots: uniqueItems(["3047", traits.items.boots]).slice(0, 2),
+        boots: uniqueItems(["3047", ...baseBoots]).slice(0, 2),
         core: uniqueItems(["3068", "3075", "3110", baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["3143", "6665", "3065", "4401", ...situational]).slice(0, 6),
       },
@@ -451,7 +656,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.7, 31),
         games: games(6100, 29),
         starting,
-        boots: uniqueItems(["3111", traits.items.boots]).slice(0, 2),
+        boots: uniqueItems(["3111", ...baseBoots]).slice(0, 2),
         core: uniqueItems(["4401", "3065", baseCore[1], baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["3001", "6665", "3075", "3110", ...situational]).slice(0, 6),
       },
@@ -467,7 +672,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(50.9, 11),
         games: games(15000, 17),
         starting,
-        boots: uniqueItems([traits.items.boots, "3047", "3111"]).slice(0, 3),
+        boots: uniqueItems([...baseBoots, "3047", "3111"]).slice(0, 3),
         core: uniqueItems([baseCore[0], baseCore[1], baseCore[2], "3053"]).slice(0, 3),
         situational: uniqueItems(["6333", "3156", "3074", "3026", ...situational]).slice(0, 6),
       },
@@ -480,7 +685,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.5, 23),
         games: games(8100, 19),
         starting,
-        boots: uniqueItems(["3047", traits.items.boots, "3111"]).slice(0, 3),
+        boots: uniqueItems(["3047", ...baseBoots, "3111"]).slice(0, 3),
         core: uniqueItems(["3078", "3153", "3074", baseCore[0]]).slice(0, 3),
         situational: uniqueItems(["6333", "3053", "3156", "3026", ...situational]).slice(0, 6),
       },
@@ -493,7 +698,7 @@ function createBuildOptions(id: string, tags: string[], traits: ReturnType<typeo
         winRate: rate(51.1, 31),
         games: games(6500, 29),
         starting,
-        boots: uniqueItems(["3111", "3047", traits.items.boots]).slice(0, 3),
+        boots: uniqueItems(["3111", "3047", ...baseBoots]).slice(0, 3),
         core: uniqueItems([baseCore[0], "3053", "6333", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3156", "3026", "3075", "3065", ...situational]).slice(0, 6),
       },
@@ -568,7 +773,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
               <span className={`px-2.5 py-0.5 rounded text-xs font-mono font-bold border backdrop-blur-md ${getTierBg(traits.tier)} ${getTierColor(traits.tier)}`}>
                 Tier {traits.tier}
               </span>
-              <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/20 text-gold text-xs uppercase tracking-wide">{traits.lane}</span>
+              <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/20 text-gold text-xs uppercase tracking-wide">{laneLabel(traits.lane)}</span>
               {champ.tags.map((tag) => (
                 <span key={tag} className="px-2 py-0.5 rounded bg-surface border border-border text-text-secondary text-xs uppercase tracking-wide">
                   {tag}
@@ -665,9 +870,11 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
                     </div>
                   ))}
                   <div className="w-4" />
-                  <div className="w-14 h-14 rounded-lg overflow-hidden border border-border bg-surface hover:border-gold/50 transition-colors">
-                    <img src={cdnItemImage(PATCH, `${traits.items.boots}.png`)} alt="Botas" className="w-full h-full object-cover" />
-                  </div>
+                  {traits.items.bootOptions.map((bootId) => (
+                    <div key={bootId} className="w-14 h-14 rounded-lg overflow-hidden border border-border bg-surface hover:border-gold/50 transition-colors">
+                      <img src={cdnItemImage(PATCH, `${bootId}.png`)} alt="Botas" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
                 </div>
               </div>
 
