@@ -30,6 +30,7 @@ type BasicSkillKey = "Q" | "W" | "E";
 type SimpleChampion = { id: string; name: string; title: string; tags: string[] };
 type SkillInfo = { key: "P" | SkillKey; name: string; description: string };
 type LaneId = PrimaryLane;
+type SelectedMode = "ranked" | "aram" | "arena" | "casual" | "aram-chaos";
 type ChampionPreset = {
   lane: LaneId;
   starting: string[];
@@ -46,6 +47,14 @@ type ChampionPreset = {
     shards: [string, string, string];
   };
 };
+
+const modeTabs: Array<{ id: SelectedMode; label: string; short: string; description: string }> = [
+  { id: "ranked", label: "Ranked", short: "SR", description: "Summoner's Rift com rota, farm e objetivos." },
+  { id: "aram", label: "ARAM", short: "ARAM", description: "Howling Abyss: luta constante, poke e sustain." },
+  { id: "arena", label: "Arena", short: "2v2", description: "Duelos curtos, sustain e itens de sobrevivencia." },
+  { id: "casual", label: "Normal", short: "Normal", description: "Summoner's Rift flexivel para testar." },
+  { id: "aram-chaos", label: "ARAM Desordem", short: "Chaos", description: "ARAM acelerado com compras rapidas e alta cura." },
+];
 type MatchupGuide = {
   championId: string;
   championName: string;
@@ -439,6 +448,153 @@ function archetypeLabel(archetype: ChampionArchetype) {
     "top-marksman": "Topo atirador",
   };
   return labels[archetype];
+}
+
+function normalizeModeParam(value?: string | string[]): SelectedMode {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return modeTabs.some((mode) => mode.id === raw) ? (raw as SelectedMode) : "ranked";
+}
+
+function modeCopy(mode: SelectedMode) {
+  return modeTabs.find((item) => item.id === mode) ?? modeTabs[0];
+}
+
+function aramStarterByChampion(tags: string[], archetype: ChampionArchetype) {
+  if (tags.includes("Mage") || archetype === "support-mage" || archetype === "top-ap" || archetype === "jungle-ap") return ["3112", "2003"];
+  if (tags.includes("Marksman") || archetype === "adc-crit" || archetype === "adc-onhit" || archetype === "adc-caster") return ["3184", "2003"];
+  if (tags.includes("Tank") || archetype.includes("tank")) return ["2051", "2003"];
+  return ["3177", "2003"];
+}
+
+function modeAdjustedItems(
+  mode: SelectedMode,
+  tags: string[],
+  traits: ReturnType<typeof getChampionBuildData>,
+) {
+  const isAdc = traits.lane === "ADC" || traits.archetype === "top-marksman";
+  const isSupport = traits.lane === "Support";
+  const isTank = traits.archetype.includes("tank");
+  const isMagic =
+    tags.includes("Mage") ||
+    traits.archetype === "mid-mage" ||
+    traits.archetype === "mid-scaling" ||
+    traits.archetype === "top-ap" ||
+    traits.archetype === "jungle-ap" ||
+    traits.archetype === "support-mage";
+
+  if (mode === "ranked") return traits.items;
+
+  if (mode === "aram" || mode === "aram-chaos") {
+    const sustain = mode === "aram-chaos" ? ["3083", "3033", "6696"] : ["3083", "6696"];
+    if (isSupport && !isMagic) {
+      const tankSupportCore = isTank ? ["3083", "3190", "3109"] : ["6617", "3107", "2065"];
+      return {
+        starting: aramStarterByChampion(tags, traits.archetype),
+        core: uniqueItems([...tankSupportCore, ...traits.items.core]).slice(0, 3),
+        boots: traits.items.boots,
+        bootOptions: traits.items.bootOptions,
+        situational: uniqueItems([...sustain, "3222", "3110", "3075", ...traits.items.situational]).slice(0, 6),
+      };
+    }
+
+    if (isAdc) {
+      return {
+        starting: aramStarterByChampion(tags, traits.archetype),
+        core: uniqueItems([traits.items.core[0], "3031", "3094", "3036"]).slice(0, 3),
+        boots: "3006",
+        bootOptions: uniqueItems(["3006", "3047", ...traits.items.bootOptions]).slice(0, 3),
+        situational: uniqueItems(["3072", "3139", "3153", "3026", ...sustain, ...traits.items.situational]).slice(0, 6),
+      };
+    }
+
+    if (isMagic) {
+      return {
+        starting: aramStarterByChampion(tags, traits.archetype),
+        core: uniqueItems([traits.items.core[0], "6653", "3089", "3135"]).slice(0, 3),
+        boots: "3020",
+        bootOptions: uniqueItems(["3020", "3158", ...traits.items.bootOptions]).slice(0, 3),
+        situational: uniqueItems(["3157", "3102", "3116", ...sustain, ...traits.items.situational]).slice(0, 6),
+      };
+    }
+
+    if (isTank) {
+      return {
+        starting: aramStarterByChampion(tags, traits.archetype),
+        core: uniqueItems(["3083", "3068", "3075", traits.items.core[0]]).slice(0, 3),
+        boots: traits.items.boots,
+        bootOptions: uniqueItems(["3047", "3111", ...traits.items.bootOptions]).slice(0, 3),
+        situational: uniqueItems(["3110", "2504", "4401", "3143", ...traits.items.situational]).slice(0, 6),
+      };
+    }
+
+    return {
+      starting: aramStarterByChampion(tags, traits.archetype),
+      core: uniqueItems([traits.items.core[0], "6610", "3053", "3071"]).slice(0, 3),
+      boots: traits.items.boots,
+      bootOptions: traits.items.bootOptions,
+      situational: uniqueItems(["6333", "3156", "3026", ...sustain, ...traits.items.situational]).slice(0, 6),
+    };
+  }
+
+  if (mode === "arena") {
+    return {
+      starting: traits.items.starting,
+      core: isMagic
+        ? uniqueItems(["4633", "3157", traits.items.core[0], "3089"]).slice(0, 3)
+        : isAdc
+          ? uniqueItems(["3153", traits.items.core[0], "3026", "3072"]).slice(0, 3)
+          : isTank
+            ? uniqueItems(["3084", "6665", "3075", traits.items.core[0]]).slice(0, 3)
+            : uniqueItems(["6632", traits.items.core[0], "3053", "6333"]).slice(0, 3),
+      boots: traits.items.boots,
+      bootOptions: traits.items.bootOptions,
+      situational: uniqueItems(["3026", "3156", "3139", "3065", "2504", ...traits.items.situational]).slice(0, 6),
+    };
+  }
+
+  return {
+    starting: traits.items.starting,
+    core: traits.items.core,
+    boots: traits.items.boots,
+    bootOptions: traits.items.bootOptions,
+    situational: uniqueItems([traits.items.situational[0], "3026", "3156", ...traits.items.situational]).slice(0, 6),
+  };
+}
+
+function applyModeToTraits(
+  mode: SelectedMode,
+  tags: string[],
+  traits: ReturnType<typeof getChampionBuildData>,
+) {
+  if (mode === "ranked") {
+    return { ...traits, mode, modeLabel: modeCopy(mode).label, modeDescription: modeCopy(mode).description };
+  }
+
+  const adjustedItems = modeAdjustedItems(mode, tags, traits);
+  const spells =
+    mode === "aram" || mode === "aram-chaos"
+      ? ["SummonerFlash.png", "SummonerSnowball.png"]
+      : mode === "arena"
+        ? ["SummonerFlash.png", "SummonerHaste.png"]
+        : traits.spells;
+
+  const runeOverride =
+    mode === "aram" && (tags.includes("Mage") || traits.archetype === "support-mage")
+      ? runePresets.darkHarvest
+      : traits.runes;
+
+  return {
+    ...traits,
+    mode,
+    modeLabel: modeCopy(mode).label,
+    modeDescription: modeCopy(mode).description,
+    pickRate: mode === "arena" ? traits.pickRate * 0.72 : traits.pickRate * 0.86,
+    banRate: mode === "aram" || mode === "aram-chaos" ? 0 : traits.banRate * 0.55,
+    items: adjustedItems,
+    spells,
+    runes: runeOverride,
+    source: `${traits.source} - ajustado para ${modeCopy(mode).label}`,
+  };
 }
 
 function sharesMatchupPool(a: string[], b: string[]) {
@@ -871,8 +1027,15 @@ function MatchupCard({ matchup, tone }: { matchup: MatchupGuide; tone: "danger" 
   );
 }
 
-export default async function ChampionDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ChampionDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<{ modo?: string | string[] }>;
+}) {
   const { id } = await params;
+  const selectedMode = normalizeModeParam((await searchParams)?.modo);
   const [{ data }, championList] = await Promise.all([fetchChampionDetail(id), fetchChampionList()]);
   const champ = data[id];
 
@@ -888,7 +1051,8 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
   }
 
   const allChampions = Object.values(championList.data);
-  const traits = getChampionBuildData(champ.id, champ.tags, allChampions);
+  const baseTraits = getChampionBuildData(champ.id, champ.tags, allChampions);
+  const traits = applyModeToTraits(selectedMode, champ.tags, baseTraits);
   const abilities = skillDetails(champ.passive, champ.spells);
   const buildOptions = createBuildOptions(champ.id, traits);
   const splashUrl = cdnChampionSplash(champ.id, 0);
@@ -911,6 +1075,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
                 Tier {traits.tier}
               </span>
               <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/20 text-gold text-xs uppercase tracking-wide">{laneLabel(traits.lane)}</span>
+              <span className="px-2 py-0.5 rounded bg-arcane/10 border border-arcane/20 text-arcane-bright text-xs uppercase tracking-wide">{traits.modeLabel}</span>
               <span className="px-2 py-0.5 rounded bg-win/10 border border-win/20 text-win text-xs uppercase tracking-wide">{archetypeLabel(traits.archetype)}</span>
               {champ.tags.map((tag) => (
                 <span key={tag} className="px-2 py-0.5 rounded bg-surface border border-border text-text-secondary text-xs uppercase tracking-wide">
@@ -921,6 +1086,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
 
             <h1 className="font-display text-4xl md:text-6xl font-black text-text-primary tracking-tight">{champ.name}</h1>
             <p className="text-lg md:text-xl text-gold font-semibold italic capitalize tracking-wide">{champ.title}</p>
+            <p className="max-w-2xl text-sm text-text-secondary">{traits.modeDescription}</p>
           </div>
 
           <div className="grid grid-cols-3 gap-4 bg-surface/50 backdrop-blur-md border border-border p-4 rounded-lg shadow-card w-full md:w-auto">
@@ -942,6 +1108,26 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
+          <div className="glass rounded-lg border border-border p-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+              {modeTabs.map((mode) => {
+                const active = mode.id === selectedMode;
+                return (
+                  <Link
+                    key={mode.id}
+                    href={`/campeoes/${champ.id}${mode.id === "ranked" ? "" : `?modo=${mode.id}`}`}
+                    className={`rounded-lg border px-3 py-3 text-center transition ${
+                      active ? "border-gold bg-gold/10 text-gold" : "border-border bg-elevated/35 text-text-secondary hover:border-border-bright hover:text-text-primary"
+                    }`}
+                  >
+                    <div className="text-xs font-bold uppercase tracking-wide">{mode.short}</div>
+                    <div className="mt-1 text-sm font-semibold">{mode.label}</div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
           <div className="glass p-6 rounded-lg border border-border space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Zap className="w-5 h-5 text-gold" />
@@ -957,7 +1143,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
                       <img src={cdnSpellImage(PATCH, spell)} alt="Summoner Spell" className="w-full h-full object-cover" />
                     </div>
                   ))}
-                  <div className="text-xs text-text-muted max-w-xs">Padrao recomendado para a rota principal do campeao.</div>
+                  <div className="text-xs text-text-muted max-w-xs">Padrao recomendado para {traits.modeLabel}.</div>
                 </div>
               </div>
 
@@ -976,7 +1162,7 @@ export default async function ChampionDetailPage({ params }: { params: Promise<{
             </div>
           </div>
 
-          <BuildOptionsPanel championName={champ.name} patch={PATCH} options={buildOptions} />
+          <BuildOptionsPanel championName={champ.name} patch={PATCH} options={buildOptions} modeLabel={traits.modeLabel} />
 
           <div className="glass p-6 rounded-lg border border-border space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">

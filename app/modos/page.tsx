@@ -18,6 +18,13 @@ function modeTone(mode: string) {
   return { icon: Gamepad2, label: "Modo rotativo", className: "text-text-secondary border-border bg-surface" };
 }
 
+function buildModeParam(mode: string) {
+  if (mode.includes("ARAM")) return "aram";
+  if (mode.includes("CLASSIC")) return "ranked";
+  if (mode.includes("CHERRY") || mode.includes("ARENA")) return "arena";
+  return "casual";
+}
+
 export default async function GameModesPage() {
   const modes = await fetchGameModes();
 
@@ -44,7 +51,11 @@ export default async function GameModesPage() {
           const Icon = tone.icon;
 
           return (
-            <article key={mode.gameMode} className="group relative overflow-hidden rounded-lg border border-border bg-surface p-5 shadow-card transition hover:border-gold/50">
+            <Link
+              key={mode.gameMode}
+              href={`/builds?modo=${buildModeParam(mode.gameMode)}`}
+              className="group relative overflow-hidden rounded-lg border border-border bg-surface p-5 shadow-card transition hover:border-gold/50"
+            >
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent opacity-0 transition group-hover:opacity-100" />
               <div className="flex items-start justify-between gap-3">
                 <div className={`flex h-11 w-11 items-center justify-center rounded border ${tone.className}`}>
@@ -54,7 +65,11 @@ export default async function GameModesPage() {
               </div>
               <h2 className="mt-5 font-display text-2xl font-bold">{mode.gameMode}</h2>
               <p className="mt-3 min-h-16 text-sm leading-relaxed text-text-secondary">{mode.description}</p>
-            </article>
+              <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
+                Ver builds desse modo
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </Link>
           );
         })}
       </div>

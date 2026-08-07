@@ -22,6 +22,7 @@ type BuildOptionsPanelProps = {
   championName: string;
   patch: string;
   options: BuildOption[];
+  modeLabel?: string;
 };
 
 function InlineItem({ patch, itemId, size = "md" }: { patch: string; itemId: string; size?: "sm" | "md" | "lg" }) {
@@ -34,7 +35,7 @@ function InlineItem({ patch, itemId, size = "md" }: { patch: string; itemId: str
   );
 }
 
-export function BuildOptionsPanel({ championName, patch, options }: BuildOptionsPanelProps) {
+export function BuildOptionsPanel({ championName, patch, options, modeLabel = "Ranked" }: BuildOptionsPanelProps) {
   const [selectedId, setSelectedId] = useState(options[0]?.id ?? "");
   const [customItems, setCustomItems] = useState<string[]>([]);
   const selected = options.find((option) => option.id === selectedId) ?? options[0];
@@ -67,11 +68,11 @@ export function BuildOptionsPanel({ championName, patch, options }: BuildOptions
             Opcoes de build
           </h2>
           <p className="mt-1 text-sm text-text-secondary">
-            Inspirado no fluxo do OP.GG: escolha uma itemizacao principal e complete com 4o/5o item situacional.
+            Inspirado no fluxo do OP.GG: escolha uma itemizacao de {modeLabel} e complete com 4o/5o item situacional.
           </p>
         </div>
         <span className="w-fit rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-gold">
-          {championName}
+          {championName} - {modeLabel}
         </span>
       </div>
 

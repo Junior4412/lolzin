@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { fetchChampionList } from "@/lib/ddragon";
 import { PATCH, cdnChampionSquare } from "@/lib/utils";
-import { ChevronRight, Layers, Shield, Swords, Zap } from "lucide-react";
+import { ChevronRight, Gamepad2, Layers, Shield, Swords, Zap } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Builds",
@@ -18,7 +18,28 @@ const roleGroups = [
   { id: "Support", title: "Suporte utilidade", label: "Peel", description: "Medalhao, Juramento, Redemption e situacionais para proteger carries.", icon: Layers },
 ];
 
-export default async function BuildsPage() {
+type SelectedMode = "ranked" | "aram" | "arena" | "casual" | "aram-chaos";
+
+const modeTabs: Array<{ id: SelectedMode; label: string; description: string }> = [
+  { id: "ranked", label: "Ranked", description: "Summoner's Rift competitivo." },
+  { id: "aram", label: "ARAM", description: "Howling Abyss: poke, sustain e teamfight." },
+  { id: "arena", label: "Arena", description: "Duelos 2v2 com foco em sobrevivencia." },
+  { id: "casual", label: "Normal", description: "Builds flexiveis para testar." },
+  { id: "aram-chaos", label: "ARAM Desordem", description: "Modo acelerado, se estiver ativo." },
+];
+
+function normalizeModeParam(value?: string | string[]) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  return modeTabs.some((mode) => mode.id === raw) ? (raw as SelectedMode) : "ranked";
+}
+
+function championHref(id: string, mode: SelectedMode) {
+  return `/campeoes/${id}${mode === "ranked" ? "" : `?modo=${mode}`}`;
+}
+
+export default async function BuildsPage({ searchParams }: { searchParams?: Promise<{ modo?: string | string[] }> }) {
+  const selectedMode = normalizeModeParam((await searchParams)?.modo);
+  const mode = modeTabs.find((item) => item.id === selectedMode) ?? modeTabs[0];
   const { data } = await fetchChampionList();
   const champions = Object.values(data);
 
@@ -26,10 +47,30 @@ export default async function BuildsPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div className="space-y-3">
         <span className="text-xs font-bold uppercase tracking-wider text-gold">Build planner</span>
-        <h1 className="font-display text-4xl font-black text-text-primary">Builds para montar antes da partida</h1>
+        <h1 className="font-display text-4xl font-black text-text-primary">Builds de {mode.label} para montar antes da partida</h1>
         <p className="max-w-2xl text-text-secondary">
-          Escolha um perfil abaixo ou abra qualquer campeao para usar o montador com core, botas e itens situacionais no estilo OP.GG.
+          {mode.description} Escolha um perfil abaixo ou abra qualquer campeao para usar o montador com core, botas e itens situacionais no estilo OP.GG.
         </p>
+      </div>
+
+      <div className="glass rounded-lg border border-border p-3">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          {modeTabs.map((item) => {
+            const active = item.id === selectedMode;
+            return (
+              <Link
+                key={item.id}
+                href={`/builds${item.id === "ranked" ? "" : `?modo=${item.id}`}`}
+                className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-3 text-sm font-semibold transition ${
+                  active ? "border-gold bg-gold/10 text-gold" : "border-border bg-elevated/35 text-text-secondary hover:border-border-bright hover:text-text-primary"
+                }`}
+              >
+                <Gamepad2 className="h-4 w-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -48,7 +89,7 @@ export default async function BuildsPage() {
               <p className="mt-2 text-sm text-text-secondary leading-relaxed">{description}</p>
               <div className="mt-4 flex -space-x-2">
                 {picks.map((champion) => (
-                  <Link key={champion.id} href={`/campeoes/${champion.id}`} className="h-10 w-10 overflow-hidden rounded-full border border-border bg-surface hover:border-gold">
+                  <Link key={champion.id} href={championHref(champion.id, selectedMode)} className="h-10 w-10 overflow-hidden rounded-full border border-border bg-surface hover:border-gold">
                     <img src={cdnChampionSquare(PATCH, champion.id)} alt={champion.name} className="h-full w-full object-cover" />
                   </Link>
                 ))}
@@ -72,7 +113,7 @@ export default async function BuildsPage() {
 
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {champions.slice(0, 18).map((champion) => (
-            <Link key={champion.id} href={`/campeoes/${champion.id}`} className="rounded-lg border border-border bg-elevated/35 p-3 hover:border-gold/60">
+            <Link key={champion.id} href={championHref(champion.id, selectedMode)} className="rounded-lg border border-border bg-elevated/35 p-3 hover:border-gold/60">
               <img src={cdnChampionSquare(PATCH, champion.id)} alt={champion.name} className="aspect-square w-full rounded object-cover" />
               <div className="mt-2 truncate text-sm font-semibold">{champion.name}</div>
               <div className="text-xs text-text-muted">{champion.tags.slice(0, 2).join(" / ")}</div>
