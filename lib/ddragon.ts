@@ -2,7 +2,7 @@
 // DDragon Client — Centralized fetch layer with caching
 // ============================================================
 
-export const PATCH = "15.14.1";
+export const PATCH = "16.15.1";
 const BASE = `https://ddragon.leagueoflegends.com/cdn/${PATCH}`;
 const CACHE_TTL = 3600; // 1h
 

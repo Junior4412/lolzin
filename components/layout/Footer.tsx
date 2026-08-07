@@ -41,6 +41,7 @@ export default function Footer() {
               <li><Link href="/campeoes" className="text-text-secondary hover:text-gold transition-colors">Campeões</Link></li>
               <li><Link href="/meta" className="text-text-secondary hover:text-gold transition-colors">Meta Tier List</Link></li>
               <li><Link href="/builds" className="text-text-secondary hover:text-gold transition-colors">Explorador de Builds</Link></li>
+              <li><Link href="/modos" className="text-text-secondary hover:text-gold transition-colors">Modos de jogo</Link></li>
               <li><Link href="/estatisticas" className="text-text-secondary hover:text-gold transition-colors">Busca de Invocador</Link></li>
               <li><Link href="/simulador" className="text-text-secondary hover:text-gold transition-colors">Simulador <span className="text-[10px] bg-gold/20 text-gold px-1.5 py-0.5 rounded ml-1">Novo</span></Link></li>
             </ul>

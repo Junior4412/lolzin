@@ -13,6 +13,7 @@ import {
   X,
   ChevronRight,
   Zap,
+  Gamepad2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,6 +21,7 @@ const navLinks = [
   { href: "/campeoes", label: "Campeões", icon: Sword },
   { href: "/meta", label: "Meta", icon: BarChart2 },
   { href: "/builds", label: "Builds", icon: Layers },
+  { href: "/modos", label: "Modos", icon: Gamepad2 },
   { href: "/estatisticas", label: "Perfil", icon: Star },
 ];
 
