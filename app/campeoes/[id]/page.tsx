@@ -806,15 +806,20 @@ function createBuildOptions(id: string, traits: ReturnType<typeof getChampionBui
 
   let options: BuildOption[];
 
+  const isPhysicalMid = physicalMidChampions.has(id);
+  const isMarksman = traits.archetype === "adc-crit" || traits.archetype === "adc-onhit" || traits.archetype === "adc-caster";
+  const isPhysicalCrit = traits.lane === "ADC" || traits.archetype === "top-marksman" || (traits.archetype === "mid-scaling" && isPhysicalMid) || (isPhysicalMid && id === "Akshan");
+  const isPhysicalAssassin = traits.archetype === "mid-assassin" && isPhysicalMid && id !== "Akshan";
   const isSupport = traits.lane === "Support";
-  const isAdc = traits.lane === "ADC" || traits.archetype === "top-marksman";
+  const isAdc = isPhysicalCrit || isMarksman;
   const isMagicDamage =
-    traits.archetype === "mid-mage" ||
-    traits.archetype === "mid-assassin" ||
-    traits.archetype === "mid-scaling" ||
-    traits.archetype === "top-ap" ||
-    traits.archetype === "jungle-ap" ||
-    traits.archetype === "support-mage";
+    !isPhysicalMid &&
+    (traits.archetype === "mid-mage" ||
+      traits.archetype === "mid-assassin" ||
+      traits.archetype === "mid-scaling" ||
+      traits.archetype === "top-ap" ||
+      traits.archetype === "jungle-ap" ||
+      traits.archetype === "support-mage");
   const isTank = traits.archetype === "top-tank" || traits.archetype === "jungle-tank" || traits.archetype === "support-tank";
 
   if (isSupport) {
@@ -899,6 +904,48 @@ function createBuildOptions(id: string, traits: ReturnType<typeof getChampionBui
         boots: uniqueItems(["3047", ...baseBoots, "3111"]).slice(0, 3),
         core: uniqueItems([baseCore[0], "3072", "3026", baseCore[1]]).slice(0, 3),
         situational: uniqueItems(["3139", "3156", "3036", "3094", ...situational]).slice(0, 6),
+      },
+    ];
+  } else if (isPhysicalAssassin) {
+    options = [
+      {
+        id: "lethality-pickoff",
+        label: "Letalidade pickoff",
+        badge: "Mais usado",
+        description: "Dano fisico explosivo para abater alvo isolado e sair vivo.",
+        pickRate: rate(28, 3),
+        winRate: rate(50.8, 11),
+        games: games(15000, 17),
+        starting,
+        boots: uniqueItems(["3158", ...baseBoots, "3009"]).slice(0, 3),
+        core: uniqueItems([baseCore[0], "6694", "6697", "3814"]).slice(0, 3),
+        situational: uniqueItems(["3026", "3156", "6676", "3071", ...situational]).slice(0, 6),
+      },
+      {
+        id: "anti-shield",
+        label: "Contra escudos",
+        badge: "Serpente",
+        description: "Boa quando o time inimigo tem escudos, encantadores ou carry protegido.",
+        pickRate: rate(14, 7),
+        winRate: rate(51.1, 19),
+        games: games(8200, 23),
+        starting,
+        boots: uniqueItems(["3158", ...baseBoots]).slice(0, 2),
+        core: uniqueItems(["6694", "6695", baseCore[0], "3814"]).slice(0, 3),
+        situational: uniqueItems(["3026", "3156", "3071", "6676", ...situational]).slice(0, 6),
+      },
+      {
+        id: "survive-ad",
+        label: "Sobreviver ao AD",
+        badge: "Seguro",
+        description: "Mantem dano fisico, mas adiciona margem contra burst e assassinos.",
+        pickRate: rate(11, 13),
+        winRate: rate(50.7, 29),
+        games: games(6500, 31),
+        starting,
+        boots: uniqueItems(["3047", ...baseBoots, "3158"]).slice(0, 3),
+        core: uniqueItems([baseCore[0], "6333", "3026", "6694"]).slice(0, 3),
+        situational: uniqueItems(["3156", "3071", "6676", "3814", ...situational]).slice(0, 6),
       },
     ];
   } else if (isMagicDamage) {
