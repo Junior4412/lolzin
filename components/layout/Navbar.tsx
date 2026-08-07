@@ -39,7 +39,14 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<QuickResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [currentMode, setCurrentMode] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  function openSearch() {
+    setCurrentMode(new URLSearchParams(window.location.search).get("modo"));
+    setSearchOpen(true);
+    setTimeout(() => searchRef.current?.focus(), 50);
+  }
 
   // Scroll effect
   useEffect(() => {
@@ -48,13 +55,22 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  useEffect(() => {
+    const syncMode = () => {
+      setCurrentMode(new URLSearchParams(window.location.search).get("modo"));
+    };
+
+    syncMode();
+    window.addEventListener("popstate", syncMode);
+    return () => window.removeEventListener("popstate", syncMode);
+  }, []);
+
   // Keyboard shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setSearchOpen(true);
-        setTimeout(() => searchRef.current?.focus(), 50);
+        openSearch();
       }
       if (e.key === "Escape") {
         setSearchOpen(false);
@@ -99,6 +115,7 @@ export default function Navbar() {
 
   const visibleResults = searchQuery.trim() ? results : [];
   const isSearching = Boolean(searchQuery.trim()) && loading;
+  const modeSuffix = currentMode && currentMode !== "ranked" ? `?modo=${currentMode}` : "";
 
   return (
     <>
@@ -149,7 +166,7 @@ export default function Navbar() {
 
           {/* Search button */}
           <button
-            onClick={() => { setSearchOpen(true); setTimeout(() => searchRef.current?.focus(), 50); }}
+            onClick={openSearch}
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 rounded border transition-all duration-200 text-sm cursor-pointer",
               "border-border text-text-muted hover:border-border-bright hover:text-text-secondary",
@@ -256,7 +273,7 @@ export default function Navbar() {
                 {visibleResults.map((r) => (
                   <Link
                     key={r.id}
-                    href={`/campeoes/${r.id}`}
+                    href={`/campeoes/${r.id}${modeSuffix}`}
                     onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
                     className="flex items-center gap-3 px-4 py-3 hover:bg-elevated transition-colors cursor-pointer"
                   >

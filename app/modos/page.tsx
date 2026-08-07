@@ -19,6 +19,7 @@ function modeTone(mode: string) {
 }
 
 function buildModeParam(mode: string) {
+  if (mode.includes("MAYHEM") || mode.includes("CHAOS") || mode.includes("DESORDEM")) return "aram-chaos";
   if (mode.includes("ARAM")) return "aram";
   if (mode.includes("CLASSIC")) return "ranked";
   if (mode.includes("CHERRY") || mode.includes("ARENA")) return "arena";
