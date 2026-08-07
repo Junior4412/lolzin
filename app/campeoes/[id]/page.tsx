@@ -73,6 +73,8 @@ const augmentTone: Record<AugmentRarity, { label: string; className: string }> =
   Prismatic: { label: "Prismatica", className: "border-arcane-bright/40 bg-arcane-bright/10 text-arcane-bright" },
 };
 
+const physicalMidChampions = new Set(["Akshan", "Naafiri", "Qiyana", "Talon", "Yasuo", "Yone", "Zed"]);
+
 const runePresets = {
   conqueror: {
     primaryPath: "Precision",
@@ -217,8 +219,8 @@ const championPresets: Record<string, ChampionPreset> = {
   Viego: { lane: "Jungle", starting: ["1101", "2003"], boots: ["3047", "3006"], core: ["3153", "6610", "3053"], situational: ["3071", "3026", "6333", "3124"], spells: ["SummonerFlash.png", "SummonerSmite.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.conqueror },
   Viktor: { lane: "Mid", starting: ["1056", "2003", "2003"], boots: ["3020", "3158"], core: ["6655", "4645", "3089"], situational: ["3157", "3135", "3102", "6653"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.aery },
   Xayah: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3508", "3031", "3094"], situational: ["3036", "3072", "3026", "6675"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["E", "W", "Q"], runes: runePresets.lethalTempo },
-  Yasuo: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3153"], situational: ["3026", "3036", "3072", "6333"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
-  Yone: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3031", "3153"], situational: ["3026", "3036", "3072", "6333"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Yasuo: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3153", "6673", "3031"], situational: ["6333", "3033", "3091", "3026", "3072"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
+  Yone: { lane: "Mid", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["3153", "6673", "3031"], situational: ["6333", "3033", "3091", "3026", "3072"], spells: ["SummonerFlash.png", "SummonerTeleport.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
   Yuumi: { lane: "Support", starting: ["3865", "2003", "2003"], boots: ["3158"], core: ["3870", "6617", "3504"], situational: ["3107", "3222", "2065", "3109"], spells: ["SummonerExhaust.png", "SummonerDot.png"], maxOrder: ["E", "Q", "W"], runes: runePresets.aery },
   Zed: { lane: "Mid", starting: ["1036", "2003", "2003"], boots: ["3158", "3009"], core: ["3142", "6694", "6697"], situational: ["3814", "3026", "3156", "6676"], spells: ["SummonerFlash.png", "SummonerDot.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.electrocute },
   Zeri: { lane: "ADC", starting: ["1055", "2003"], boots: ["3006", "3047"], core: ["6672", "3085", "3031"], situational: ["3036", "3072", "3094", "3026"], spells: ["SummonerFlash.png", "SummonerBarrier.png"], maxOrder: ["Q", "E", "W"], runes: runePresets.lethalTempo },
@@ -478,19 +480,25 @@ function aramStarterByChampion(tags: string[], archetype: ChampionArchetype) {
 
 function modeAdjustedItems(
   mode: SelectedMode,
+  championId: string,
   tags: string[],
   traits: ReturnType<typeof getChampionBuildData>,
 ) {
-  const isAdc = traits.lane === "ADC" || traits.archetype === "top-marksman";
+  const isPhysicalMid = physicalMidChampions.has(championId);
+  const isMarksman = tags.includes("Marksman");
+  const isAdc = traits.lane === "ADC" || traits.archetype === "top-marksman" || isMarksman;
   const isSupport = traits.lane === "Support";
   const isTank = traits.archetype.includes("tank");
+  const isPhysicalAssassin = traits.archetype === "mid-assassin" && isPhysicalMid && !isMarksman;
+  const isPhysicalCrit = isAdc || (traits.archetype === "mid-scaling" && isPhysicalMid);
   const isMagic =
-    tags.includes("Mage") ||
-    traits.archetype === "mid-mage" ||
-    traits.archetype === "mid-scaling" ||
-    traits.archetype === "top-ap" ||
-    traits.archetype === "jungle-ap" ||
-    traits.archetype === "support-mage";
+    !isPhysicalMid &&
+    (tags.includes("Mage") ||
+      traits.archetype === "mid-mage" ||
+      traits.archetype === "mid-assassin" ||
+      traits.archetype === "top-ap" ||
+      traits.archetype === "jungle-ap" ||
+      traits.archetype === "support-mage");
 
   if (mode === "ranked") return traits.items;
 
@@ -507,10 +515,10 @@ function modeAdjustedItems(
       };
     }
 
-    if (isAdc) {
+    if (isPhysicalCrit) {
       return {
         starting: aramStarterByChampion(tags, traits.archetype),
-        core: uniqueItems([traits.items.core[0], "3031", "3094", "3036"]).slice(0, 3),
+        core: uniqueItems([traits.items.core[0], "6673", "3031", "3094", "3036"]).slice(0, 3),
         boots: "3006",
         bootOptions: uniqueItems(["3006", "3047", ...traits.items.bootOptions]).slice(0, 3),
         situational: uniqueItems(["3072", "3139", "3153", "3026", ...sustain, ...traits.items.situational]).slice(0, 6),
@@ -524,6 +532,16 @@ function modeAdjustedItems(
         boots: "3020",
         bootOptions: uniqueItems(["3020", "3158", ...traits.items.bootOptions]).slice(0, 3),
         situational: uniqueItems(["3157", "3102", "3116", ...sustain, ...traits.items.situational]).slice(0, 6),
+      };
+    }
+
+    if (isPhysicalAssassin) {
+      return {
+        starting: aramStarterByChampion(tags, traits.archetype),
+        core: uniqueItems([traits.items.core[0], "6694", "6697", "3814"]).slice(0, 3),
+        boots: "3158",
+        bootOptions: uniqueItems(["3158", "3009", "3047", ...traits.items.bootOptions]).slice(0, 3),
+        situational: uniqueItems(["3026", "3156", "6676", "6696", ...sustain, ...traits.items.situational]).slice(0, 6),
       };
     }
 
@@ -551,8 +569,10 @@ function modeAdjustedItems(
       starting: traits.items.starting,
       core: isMagic
         ? uniqueItems(["4633", "3157", traits.items.core[0], "3089"]).slice(0, 3)
-        : isAdc
-          ? uniqueItems(["3153", traits.items.core[0], "3026", "3072"]).slice(0, 3)
+        : isPhysicalCrit
+          ? uniqueItems(["3153", "6673", traits.items.core[0], "6333", "3026"]).slice(0, 3)
+          : isPhysicalAssassin
+            ? uniqueItems(["3142", traits.items.core[0], "6694", "3026"]).slice(0, 3)
           : isTank
             ? uniqueItems(["3084", "6665", "3075", traits.items.core[0]]).slice(0, 3)
             : uniqueItems(["6632", traits.items.core[0], "3053", "6333"]).slice(0, 3),
@@ -573,6 +593,7 @@ function modeAdjustedItems(
 
 function applyModeToTraits(
   mode: SelectedMode,
+  championId: string,
   tags: string[],
   traits: ReturnType<typeof getChampionBuildData>,
 ) {
@@ -580,7 +601,7 @@ function applyModeToTraits(
     return { ...traits, mode, modeLabel: modeCopy(mode).label, modeDescription: modeCopy(mode).description };
   }
 
-  const adjustedItems = modeAdjustedItems(mode, tags, traits);
+  const adjustedItems = modeAdjustedItems(mode, championId, tags, traits);
   const spells =
     mode === "aram" || mode === "aram-chaos"
       ? ["SummonerFlash.png", "SummonerSnowball.png"]
@@ -1125,7 +1146,7 @@ export default async function ChampionDetailPage({
 
   const allChampions = Object.values(championList.data);
   const baseTraits = getChampionBuildData(champ.id, champ.tags, allChampions);
-  const traits = applyModeToTraits(selectedMode, champ.tags, baseTraits);
+  const traits = applyModeToTraits(selectedMode, champ.id, champ.tags, baseTraits);
   const abilities = skillDetails(champ.passive, champ.spells);
   const buildOptions = createBuildOptions(champ.id, traits);
   const splashUrl = cdnChampionSplash(champ.id, 0);
