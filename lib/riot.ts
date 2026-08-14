@@ -42,6 +42,15 @@ export interface ChampionStats {
   kdaRatio: string;
 }
 
+export interface ChampionMasteryStats {
+  championId: string;
+  championName: string;
+  championLevel: number;
+  championPoints: number;
+  chestGranted: boolean;
+  lastPlayTime: number;
+}
+
 export interface MatchHistoryItem {
   matchId: string;
   championId: string;
@@ -68,6 +77,7 @@ export interface PlayerDashboardData {
   profile: PlayerProfile;
   stats: PlayerStats;
   champions: ChampionStats[];
+  mastery: ChampionMasteryStats[];
   history: MatchHistoryItem[];
 }
 
@@ -357,6 +367,14 @@ export function generateMockPlayerData(name: string, tag: string, region: string
     profile,
     stats,
     champions,
+    mastery: champions.slice(0, 5).map((champion, index) => ({
+      championId: champion.championId,
+      championName: champion.championName,
+      championLevel: Math.max(4, 7 - index),
+      championPoints: Math.round((champion.games * 18250) + seed / (index + 3)),
+      chestGranted: index % 2 === 0,
+      lastPlayTime: Date.now() - (index + 1) * 86400000,
+    })),
     history
   };
 }

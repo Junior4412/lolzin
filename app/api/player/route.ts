@@ -6,6 +6,15 @@ import {
   MatchHistoryItem,
   ChampionStats
 } from "@/lib/riot";
+import { fetchChampionList } from "@/lib/ddragon";
+
+type ChampionMasteryEntry = {
+  championId: number;
+  championLevel: number;
+  championPoints: number;
+  lastPlayTime: number;
+  chestGranted: boolean;
+};
 
 const REGION_MAPPING: Record<string, { platform: string; regional: string }> = {
   br: { platform: "br1", regional: "americas" },
@@ -98,6 +107,8 @@ export async function GET(req: NextRequest) {
     }
 
     const headers = { "X-Riot-Token": apiKey };
+    const { data: championData } = await fetchChampionList();
+    const championByKey = new Map(Object.values(championData).map((champion) => [Number(champion.key), champion]));
 
     // 1. Resolver Riot ID para PUUID
     const accountUrl = `https://${config.regional}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`;
@@ -122,10 +133,9 @@ export async function GET(req: NextRequest) {
       throw new Error(`Erro na API de Invocadores da Riot: ${summonerRes.status}`);
     }
     const summoner = await summonerRes.json();
-    const summonerId = summoner.id;
 
-    // 3. Buscar Elo (League-V4)
-    const leagueUrl = `https://${config.platform}.api.riotgames.com/lol/league/v4/entries/by-summoner/${summonerId}`;
+    // 3. Buscar Elo (League-V4) por PUUID, fluxo atual recomendado pela Riot.
+    const leagueUrl = `https://${config.platform}.api.riotgames.com/lol/league/v4/entries/by-puuid/${puuid}`;
     const leagueRes = await fetch(leagueUrl, { headers });
     let tier = "UNRANKED";
     let rank = "";
@@ -164,7 +174,31 @@ export async function GET(req: NextRequest) {
       winRate
     };
 
-    // 4. Buscar últimas 10 Partidas
+    // 4. Buscar Maestria de Campeoes (Champion-Mastery-V4)
+    const masteryUrl = `https://${config.platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${puuid}/top?count=8`;
+    const masteryRes = await fetch(masteryUrl, { headers });
+    let mastery: PlayerDashboardData["mastery"] = [];
+
+    if (masteryRes.ok) {
+      const masteryEntries = (await masteryRes.json()) as ChampionMasteryEntry[];
+      mastery = masteryEntries
+        .map((entry) => {
+          const champion = championByKey.get(entry.championId);
+          if (!champion) return null;
+
+          return {
+            championId: champion.id,
+            championName: champion.name,
+            championLevel: entry.championLevel,
+            championPoints: entry.championPoints,
+            chestGranted: entry.chestGranted,
+            lastPlayTime: entry.lastPlayTime,
+          };
+        })
+        .filter(Boolean) as PlayerDashboardData["mastery"];
+    }
+
+    // 5. Buscar últimas 10 Partidas
     const matchesUrl = `https://${config.regional}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=10`;
     const matchesRes = await fetch(matchesUrl, { headers });
     let matchIds: string[] = [];
@@ -172,7 +206,7 @@ export async function GET(req: NextRequest) {
       matchIds = await matchesRes.json();
     }
 
-    // 5. Buscar detalhes das partidas em paralelo
+    // 6. Buscar detalhes das partidas em paralelo
     const matchHistory: MatchHistoryItem[] = [];
     const championGames: Record<string, { name: string; games: number; wins: number; kills: number; deaths: number; assists: number }> = {};
     
@@ -373,6 +407,7 @@ export async function GET(req: NextRequest) {
       profile,
       stats,
       champions: championsList,
+      mastery,
       history: matchHistory.sort((a, b) => b.timestamp - a.timestamp)
     };
 

@@ -170,7 +170,8 @@ export function PlayerLookup() {
           </section>
 
           <section className="grid grid-cols-1 gap-6 lg:grid-cols-[380px_1fr]">
-            <div className="rounded-lg border border-border bg-surface/80 p-5">
+            <div className="space-y-6">
+              <div className="rounded-lg border border-border bg-surface/80 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <Crown className="h-5 w-5 text-gold" />
                 <h3 className="font-display text-xl font-bold">Campeoes assinatura</h3>
@@ -187,6 +188,31 @@ export function PlayerLookup() {
                     <span className="font-mono text-sm font-bold text-win">{champion.winRate}%</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+              <div className="rounded-lg border border-border bg-surface/80 p-5">
+                <div className="mb-4 flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-gold" />
+                  <h3 className="font-display text-xl font-bold">Maestrias</h3>
+                </div>
+                <div className="space-y-3">
+                  {(!data.mastery || data.mastery.length === 0) && <p className="text-sm text-text-secondary">Nenhuma maestria encontrada pela Riot API.</p>}
+                  {(data.mastery || []).slice(0, 5).map((champion) => (
+                    <div key={champion.championId} className="flex items-center gap-3 rounded border border-border bg-deep p-3">
+                      <img src={cdnChampionSquare(PATCH, champion.championId)} alt={champion.championName} className="h-11 w-11 rounded border border-border object-cover" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-semibold">{champion.championName}</p>
+                        <p className="text-xs text-text-muted">
+                          Nivel {champion.championLevel} - {champion.championPoints.toLocaleString("pt-BR")} pts
+                        </p>
+                      </div>
+                      <span className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase ${champion.chestGranted ? "border-gold/30 bg-gold/10 text-gold" : "border-border text-text-muted"}`}>
+                        {champion.chestGranted ? "Bau" : "Aberto"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
