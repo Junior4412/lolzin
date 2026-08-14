@@ -60,23 +60,23 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
   };
 
   return (
-    <div className="lux-panel rounded-lg p-6">
-      <div className="mb-6 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+    <div className="blitz-card rounded p-4">
+      <div className="mb-4 flex flex-col gap-2 border-b border-border pb-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="font-display flex items-center gap-2 text-xl font-bold">
-            <ClipboardList className="h-5 w-5 text-gold" />
-            Opcoes de build
+          <h2 className="flex items-center gap-2 text-base font-black">
+            <ClipboardList className="h-4 w-4 text-gold" />
+            Opcoes de build mais usadas
           </h2>
-          <p className="mt-1 text-sm text-text-secondary">
+          <p className="mt-1 text-xs text-text-secondary">
             Inspirado no fluxo do OP.GG: escolha uma itemizacao de {modeLabel} e complete com 4o/5o item situacional.
           </p>
         </div>
-        <span className="w-fit rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-gold">
+        <span className="w-fit rounded border border-border bg-elevated px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-text-secondary">
           {championName} - {modeLabel}
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 xl:grid-cols-3">
         {options.map((option) => {
           const active = option.id === selected.id;
 
@@ -84,13 +84,13 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
             <button
               key={option.id}
               onClick={() => chooseOption(option.id)}
-              className={`rounded-lg p-4 text-left transition-colors ${
-                active ? "mode-pill-active" : "interactive-card"
+              className={`rounded border p-3 text-left transition-colors ${
+                active ? "border-gold/70 bg-gold/10" : "border-border bg-deep hover:border-border-bright hover:bg-elevated/60"
               }`}
             >
               <div className="mb-3 flex items-start justify-between gap-3">
                 <div>
-                  <div className="font-semibold text-text-primary">{option.label}</div>
+                  <div className="text-sm font-black text-text-primary">{option.label}</div>
                   <div className="mt-1 text-xs text-text-muted">{option.description}</div>
                 </div>
                 <span className={`rounded border px-2 py-0.5 text-[10px] font-bold uppercase ${active ? "border-gold/40 text-gold" : "border-border text-text-muted"}`}>
@@ -98,7 +98,7 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
                 </span>
               </div>
 
-              <div className="mb-3 flex items-center gap-2">
+              <div className="mb-3 flex items-center gap-1.5">
                 {option.core.map((itemId, index) => (
                   <span key={itemId} className="flex items-center gap-2">
                     <InlineItem patch={patch} itemId={itemId} size="sm" />
@@ -107,7 +107,7 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
                 ))}
               </div>
 
-              <div className="grid grid-cols-3 gap-2 text-xs">
+              <div className="grid grid-cols-3 gap-2 border-t border-border pt-2 text-xs">
                 <div>
                   <div className="text-text-muted">Pick</div>
                   <div className="font-mono font-bold text-text-primary">{option.pickRate.toFixed(1)}%</div>
@@ -126,11 +126,11 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
         })}
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="stat-strip rounded-lg p-4">
+      <div className="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[1.2fr_0.8fr]">
+        <div className="blitz-card-soft rounded p-4">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-text-primary">Sua build montada</h3>
+              <h3 className="text-sm font-black text-text-primary">Sua build montada</h3>
               <p className="text-xs text-text-muted">Itens iniciais, botas e caminho principal selecionado.</p>
             </div>
             <button
@@ -180,10 +180,10 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
           </div>
         </div>
 
-        <div className="stat-strip rounded-lg p-4">
+        <div className="blitz-card-soft rounded p-4">
           <div className="mb-4 flex items-center gap-2">
             <Shield className="h-4 w-4 text-gold" />
-            <h3 className="font-semibold text-text-primary">Situacionais</h3>
+            <h3 className="text-sm font-black text-text-primary">Situacionais</h3>
           </div>
           <div className="grid grid-cols-2 gap-2">
             {selected.situational.map((itemId) => {

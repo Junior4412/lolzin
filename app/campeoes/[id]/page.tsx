@@ -1178,23 +1178,23 @@ function CounterBuildPanel({ traits }: { traits: ReturnType<typeof applyModeToTr
   }));
 
   return (
-    <div className="glass rounded-lg border border-border p-6">
-      <div className="mb-5 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+    <div className="blitz-card rounded p-4">
+      <div className="mb-4 flex flex-col gap-2 border-b border-border pb-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-gold">Contra matchup</span>
-          <h2 className="font-display mt-1 flex items-center gap-2 text-xl font-bold">
-            <ShieldAlert className="h-5 w-5 text-loss" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gold">Contra matchup</span>
+          <h2 className="mt-1 flex items-center gap-2 text-base font-black">
+            <ShieldAlert className="h-4 w-4 text-loss" />
             Build adaptada por inimigo
           </h2>
         </div>
-        <span className="w-fit rounded border border-border bg-elevated/40 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-text-secondary">
+        <span className="w-fit rounded border border-border bg-elevated/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-text-secondary">
           Estilo OP.GG Pick
         </span>
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {plans.map(({ matchup, item, label }) => (
-          <article key={matchup.championId} className="rounded-lg border border-border bg-elevated/35 p-4">
+          <article key={matchup.championId} className="rounded border border-border bg-deep p-3">
             <div className="mb-3 flex items-center gap-3">
               <img src={cdnChampionSquare(PATCH, matchup.championId)} alt={matchup.championName} className="h-10 w-10 rounded border border-border object-cover" />
               <div className="min-w-0">
@@ -1236,23 +1236,23 @@ function ProBuildsPanel({ traits }: { traits: ReturnType<typeof applyModeToTrait
   ];
 
   return (
-    <div className="glass rounded-lg border border-border p-6">
-      <div className="mb-5 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+    <div className="blitz-card rounded p-4">
+      <div className="mb-4 flex flex-col gap-2 border-b border-border pb-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-gold">Pro builds</span>
-          <h2 className="font-display mt-1 flex items-center gap-2 text-xl font-bold">
-            <Trophy className="h-5 w-5 text-gold" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-gold">Pro builds</span>
+          <h2 className="mt-1 flex items-center gap-2 text-base font-black">
+            <Trophy className="h-4 w-4 text-gold" />
             Estilos para copiar rapido
           </h2>
         </div>
-        <span className="w-fit rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-gold">
+        <span className="w-fit rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-gold">
           Blitz inspired
         </span>
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         {variants.map((variant) => (
-          <article key={variant.title} className="rounded-lg border border-border bg-elevated/35 p-4">
+          <article key={variant.title} className="rounded border border-border bg-deep p-3">
             <div className="mb-3 flex items-start justify-between gap-3">
               <h3 className="font-semibold text-text-primary">{variant.title}</h3>
               <span className="rounded border border-border px-2 py-0.5 text-[10px] font-bold uppercase text-text-muted">{variant.label}</span>
@@ -1268,7 +1268,7 @@ function ProBuildsPanel({ traits }: { traits: ReturnType<typeof applyModeToTrait
 
 function SynergyCard({ synergy }: { synergy: SynergyGuide }) {
   return (
-    <Link href={`/campeoes/${synergy.championId}`} className="block rounded-lg border border-border bg-elevated/40 p-4 transition hover:border-gold/50">
+    <Link href={`/campeoes/${synergy.championId}`} className="block rounded border border-border bg-deep p-3 transition hover:border-arcane/60">
       <div className="flex items-center justify-between gap-3">
         <div className="flex min-w-0 items-center gap-3">
           <img src={cdnChampionSquare(PATCH, synergy.championId)} alt={synergy.championName} className="h-10 w-10 flex-shrink-0 rounded border border-border object-cover" />
@@ -1297,12 +1297,12 @@ function AramChaosCardsPanel({
   const isCurated = entry.kind === "curated";
 
   return (
-    <div className="lux-panel rounded-lg p-6">
-      <div className="mb-6 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+    <div className="blitz-card rounded p-4">
+      <div className="mb-4 flex flex-col gap-2 border-b border-border pb-3 md:flex-row md:items-end md:justify-between">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-arcane-bright">ARAM Desordem</span>
-          <h2 className="font-display mt-1 flex items-center gap-2 text-xl font-bold">
-            <Sparkles className="h-5 w-5 text-gold" />
+          <span className="text-[10px] font-bold uppercase tracking-wider text-arcane-bright">ARAM Desordem</span>
+          <h2 className="mt-1 flex items-center gap-2 text-base font-black">
+            <Sparkles className="h-4 w-4 text-gold" />
             Cartas recomendadas para {championName}
           </h2>
         </div>
@@ -1381,106 +1381,112 @@ export default async function ChampionDetailPage({
   const priorityLabel = traits.maxOrder.join(" > ");
 
   return (
-    <div className="rift-shell flex flex-col min-h-screen">
-      <section className="relative w-full py-16 md:py-24 overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-cover bg-center opacity-[0.28] pointer-events-none scale-105" style={{ backgroundImage: `url('${splashUrl}')` }} />
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,6,14,0.98),rgba(3,6,14,0.76),rgba(3,6,14,0.94)),linear-gradient(180deg,rgba(7,13,26,0.36),rgba(3,6,14,1))] pointer-events-none" />
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/45 to-transparent" />
+    <div className="rift-shell flex min-h-screen flex-col">
+      <section className="relative w-full overflow-hidden border-b border-border bg-deep">
+        <div className="absolute inset-0 scale-105 bg-cover bg-center opacity-[0.14] pointer-events-none" style={{ backgroundImage: `url('${splashUrl}')` }} />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(9,10,16,0.98),rgba(13,15,23,0.86),rgba(9,10,16,0.98))] pointer-events-none" />
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-10">
-          <div className="champion-portrait-frame relative w-28 h-28 md:w-36 md:h-36 rounded-xl overflow-hidden border-2 border-gold/40 shadow-lg flex-shrink-0">
+        <div className="relative z-10 mx-auto flex max-w-[1360px] flex-col gap-4 px-3 py-5 sm:px-5 md:flex-row md:items-center">
+          <div className="champion-portrait-frame relative h-20 w-20 flex-shrink-0 overflow-hidden rounded border border-border md:h-24 md:w-24">
             <img src={cdnChampionSquare(PATCH, champ.id)} alt={champ.name} className="w-full h-full object-cover" />
           </div>
 
-          <div className="flex-1 text-center md:text-left space-y-3">
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              <span className={`px-2.5 py-0.5 rounded text-xs font-mono font-bold border backdrop-blur-md ${getTierBg(traits.tier)} ${getTierColor(traits.tier)}`}>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={`rounded border px-2 py-0.5 font-mono text-[11px] font-bold backdrop-blur-md ${getTierBg(traits.tier)} ${getTierColor(traits.tier)}`}>
                 Tier {traits.tier}
               </span>
-              <span className="px-2 py-0.5 rounded bg-gold/10 border border-gold/20 text-gold text-xs uppercase tracking-wide">{laneLabel(traits.lane)}</span>
-              <span className="px-2 py-0.5 rounded bg-arcane/10 border border-arcane/20 text-arcane-bright text-xs uppercase tracking-wide">{traits.modeLabel}</span>
-              <span className="px-2 py-0.5 rounded bg-win/10 border border-win/20 text-win text-xs uppercase tracking-wide">{archetypeLabel(traits.archetype)}</span>
+              <span className="rounded border border-gold/20 bg-gold/10 px-2 py-0.5 text-[11px] uppercase tracking-wide text-gold">{laneLabel(traits.lane)}</span>
+              <span className="rounded border border-arcane/20 bg-arcane/10 px-2 py-0.5 text-[11px] uppercase tracking-wide text-arcane-bright">{traits.modeLabel}</span>
+              <span className="rounded border border-win/20 bg-win/10 px-2 py-0.5 text-[11px] uppercase tracking-wide text-win">{archetypeLabel(traits.archetype)}</span>
               {champ.tags.map((tag) => (
-                <span key={tag} className="px-2 py-0.5 rounded bg-surface border border-border text-text-secondary text-xs uppercase tracking-wide">
+                <span key={tag} className="rounded border border-border bg-surface px-2 py-0.5 text-[11px] uppercase tracking-wide text-text-secondary">
                   {tag}
                 </span>
               ))}
             </div>
 
-            <h1 className="font-display text-4xl md:text-6xl font-black text-text-primary tracking-tight">{champ.name}</h1>
-            <p className="text-lg md:text-xl text-gold font-semibold italic capitalize tracking-wide">{champ.title}</p>
-            <p className="max-w-2xl text-sm text-text-secondary">{traits.modeDescription}</p>
+            <div>
+              <h1 className="truncate text-2xl font-black tracking-tight text-text-primary md:text-3xl">
+                {champ.name} <span className="font-semibold text-text-secondary">Build, runas e counters</span>
+              </h1>
+              <p className="mt-1 max-w-3xl text-sm text-text-secondary">
+                {champ.title} - {traits.modeDescription}
+              </p>
+            </div>
           </div>
 
-          <div className="stat-strip grid grid-cols-3 gap-4 backdrop-blur-md p-4 rounded-lg w-full md:w-auto">
-            <div className="text-center px-2">
-              <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Win Rate</div>
-              <div className="text-win font-mono text-xl font-bold">{(traits.winRate * 100).toFixed(1)}%</div>
+          <div className="blitz-card grid w-full grid-cols-3 overflow-hidden rounded md:w-[360px]">
+            <div className="blitz-metric px-4 py-3 text-center">
+              <div className="mb-1 text-[10px] uppercase tracking-wider text-text-muted">Win Rate</div>
+              <div className="font-mono text-lg font-black text-win">{(traits.winRate * 100).toFixed(1)}%</div>
             </div>
-            <div className="text-center px-2 border-x border-border">
-              <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Pick Rate</div>
-              <div className="text-text-primary font-mono text-xl font-bold">{(traits.pickRate * 100).toFixed(1)}%</div>
+            <div className="blitz-metric px-4 py-3 text-center">
+              <div className="mb-1 text-[10px] uppercase tracking-wider text-text-muted">Pick Rate</div>
+              <div className="font-mono text-lg font-black text-text-primary">{(traits.pickRate * 100).toFixed(1)}%</div>
             </div>
-            <div className="text-center px-2">
-              <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Ban Rate</div>
-              <div className="text-loss font-mono text-xl font-bold">{(traits.banRate * 100).toFixed(1)}%</div>
+            <div className="blitz-metric px-4 py-3 text-center">
+              <div className="mb-1 text-[10px] uppercase tracking-wider text-text-muted">Ban Rate</div>
+              <div className="font-mono text-lg font-black text-loss">{(traits.banRate * 100).toFixed(1)}%</div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-8 space-y-8">
-          <div className="lux-panel rounded-lg p-3">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-              {modeTabs.map((mode) => {
-                const active = mode.id === selectedMode;
-                return (
-                  <Link
-                    key={mode.id}
-                    href={`/campeoes/${champ.id}${mode.id === "ranked" ? "" : `?modo=${mode.id}`}`}
-                    className={`rounded-lg px-3 py-3 text-center transition ${
-                      active ? "mode-pill-active" : "mode-pill text-text-secondary hover:border-border-bright hover:text-text-primary"
-                    }`}
-                  >
-                    <div className="text-xs font-bold uppercase tracking-wide">{mode.short}</div>
-                    <div className="mt-1 text-sm font-semibold">{mode.label}</div>
-                  </Link>
-                );
-              })}
+      <section className="blitz-subnav sticky top-12 z-30">
+        <div className="mx-auto flex max-w-[1360px] gap-1 overflow-x-auto px-3 sm:px-5">
+          {modeTabs.map((mode) => {
+            const active = mode.id === selectedMode;
+            return (
+              <Link
+                key={mode.id}
+                href={`/campeoes/${champ.id}${mode.id === "ranked" ? "" : `?modo=${mode.id}`}`}
+                className={`blitz-tab whitespace-nowrap px-4 py-3 text-xs font-bold ${active ? "blitz-tab-active" : ""}`}
+              >
+                {mode.label}
+              </Link>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mx-auto grid w-full max-w-[1360px] grid-cols-1 gap-5 px-3 py-5 sm:px-5 lg:grid-cols-12">
+        <div className="space-y-5 lg:col-span-8">
+          <div className="blitz-card rounded p-4">
+            <div className="mb-4 flex items-center justify-between border-b border-border pb-3">
+              <h2 className="flex items-center gap-2 text-base font-black">
+                <Zap className="h-4 w-4 text-gold" />
+                Configuracao recomendada
+              </h2>
+              <span className="rounded border border-border bg-elevated px-2 py-1 text-[10px] font-bold uppercase text-text-secondary">
+                {traits.modeLabel}
+              </span>
             </div>
-          </div>
 
-          <div className="lux-panel p-6 rounded-lg space-y-6">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Zap className="w-5 h-5 text-gold" />
-              Configuracao recomendada
-            </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-text-secondary">Feiticos de invocador</h3>
-                <div className="flex items-center gap-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Feiticos de invocador</h3>
+                <div className="flex items-center gap-2">
                   {traits.spells.map((spell) => (
-                    <div key={spell} className="w-12 h-12 rounded-lg overflow-hidden border border-border bg-surface">
-                      <img src={cdnSpellImage(PATCH, spell)} alt="Summoner Spell" className="w-full h-full object-cover" />
+                    <div key={spell} className="h-10 w-10 overflow-hidden rounded border border-border bg-surface">
+                      <img src={cdnSpellImage(PATCH, spell)} alt="Summoner Spell" className="h-full w-full object-cover" />
                     </div>
                   ))}
-                  <div className="text-xs text-text-muted max-w-xs">Padrao recomendado para {traits.modeLabel}.</div>
+                  <div className="text-xs text-text-muted">Padrao para {traits.modeLabel}.</div>
                 </div>
               </div>
 
               <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-text-secondary">Prioridade de maximizar</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted">Prioridade de maximizar</h3>
                 <div className="flex items-center gap-2">
                   {traits.maxOrder.map((skill, idx) => (
                     <div key={skill} className="flex items-center">
-                      <div className="w-10 h-10 rounded bg-elevated border border-border flex items-center justify-center font-display font-bold text-lg text-gold">{skill}</div>
-                      {idx < traits.maxOrder.length - 1 && <ChevronRight className="w-4 h-4 text-text-muted mx-1" />}
+                      <div className="flex h-9 w-9 items-center justify-center rounded border border-border bg-elevated text-sm font-black text-gold">{skill}</div>
+                      {idx < traits.maxOrder.length - 1 && <ChevronRight className="mx-1 h-4 w-4 text-text-muted" />}
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-text-muted">Plano: upe {priorityLabel}, colocando R nos niveis 6, 11 e 16.</p>
+                <p className="text-xs text-text-muted">Plano: {priorityLabel}, com R nos niveis 6, 11 e 16.</p>
               </div>
             </div>
           </div>
@@ -1495,9 +1501,9 @@ export default async function ChampionDetailPage({
             <AramChaosCardsPanel championId={champ.id} championName={champ.name} archetype={traits.archetype} />
           )}
 
-          <div className="lux-panel p-6 rounded-lg space-y-6">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-gold" />
+          <div className="blitz-card rounded p-4 space-y-5">
+            <h2 className="flex items-center gap-2 border-b border-border pb-3 text-base font-black">
+              <Shield className="h-4 w-4 text-gold" />
               Build de itens
             </h2>
 
@@ -1546,9 +1552,9 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="lux-panel p-6 rounded-lg space-y-5">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Users className="w-5 h-5 text-gold" />
+          <div className="blitz-card rounded p-4 space-y-5">
+            <h2 className="flex items-center gap-2 border-b border-border pb-3 text-base font-black">
+              <Users className="h-4 w-4 text-gold" />
               Sinergias de composicao
             </h2>
             <div className="space-y-3">
@@ -1562,9 +1568,9 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="lux-panel p-6 rounded-lg space-y-6">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Award className="w-5 h-5 text-gold" />
+          <div className="blitz-card rounded p-4 space-y-5">
+            <h2 className="flex items-center gap-2 border-b border-border pb-3 text-base font-black">
+              <Award className="h-4 w-4 text-gold" />
               Ordem de habilidades
             </h2>
 
@@ -1610,10 +1616,10 @@ export default async function ChampionDetailPage({
           </div>
         </div>
 
-        <aside className="lg:col-span-4 space-y-8">
-          <div className="lux-panel p-6 rounded-lg space-y-6">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Star className="w-5 h-5 text-gold" />
+        <aside className="space-y-5 lg:col-span-4">
+          <div className="blitz-card rounded p-4 space-y-5">
+            <h2 className="flex items-center gap-2 border-b border-border pb-3 text-base font-black">
+              <Star className="h-4 w-4 text-gold" />
               Runas recomendadas
             </h2>
 
@@ -1653,9 +1659,9 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="lux-panel p-6 rounded-lg space-y-6">
-            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
-              <Skull className="w-5 h-5 text-gold" />
+          <div className="blitz-card rounded p-4 space-y-5">
+            <h2 className="flex items-center gap-2 border-b border-border pb-3 text-base font-black">
+              <Skull className="h-4 w-4 text-gold" />
               Counters e matchups
             </h2>
 
