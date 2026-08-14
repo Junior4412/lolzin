@@ -3,7 +3,8 @@ import { Zap, Github, Twitter, Heart } from "lucide-react";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-border bg-surface mt-20 relative z-10">
+    <footer className="relative z-10 mt-20 border-t border-border bg-[linear-gradient(180deg,rgba(13,21,37,0.94),rgba(3,6,14,0.98))]">
+      <div className="gold-divider" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           

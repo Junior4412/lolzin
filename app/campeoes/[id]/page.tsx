@@ -1380,13 +1380,14 @@ export default async function ChampionDetailPage({
   const priorityLabel = traits.maxOrder.join(" > ");
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="rift-shell flex flex-col min-h-screen">
       <section className="relative w-full py-16 md:py-24 overflow-hidden border-b border-border">
-        <div className="absolute inset-0 bg-cover bg-center opacity-[0.16] pointer-events-none scale-105" style={{ backgroundImage: `url('${splashUrl}')` }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-void/80 via-void/95 to-void pointer-events-none" />
+        <div className="absolute inset-0 bg-cover bg-center opacity-[0.28] pointer-events-none scale-105" style={{ backgroundImage: `url('${splashUrl}')` }} />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,6,14,0.98),rgba(3,6,14,0.76),rgba(3,6,14,0.94)),linear-gradient(180deg,rgba(7,13,26,0.36),rgba(3,6,14,1))] pointer-events-none" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/45 to-transparent" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-10">
-          <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-xl overflow-hidden border-2 border-gold/40 shadow-lg flex-shrink-0">
+          <div className="champion-portrait-frame relative w-28 h-28 md:w-36 md:h-36 rounded-xl overflow-hidden border-2 border-gold/40 shadow-lg flex-shrink-0">
             <img src={cdnChampionSquare(PATCH, champ.id)} alt={champ.name} className="w-full h-full object-cover" />
           </div>
 
@@ -1410,7 +1411,7 @@ export default async function ChampionDetailPage({
             <p className="max-w-2xl text-sm text-text-secondary">{traits.modeDescription}</p>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 bg-surface/50 backdrop-blur-md border border-border p-4 rounded-lg shadow-card w-full md:w-auto">
+          <div className="stat-strip grid grid-cols-3 gap-4 backdrop-blur-md p-4 rounded-lg w-full md:w-auto">
             <div className="text-center px-2">
               <div className="text-text-muted text-xs uppercase tracking-wider mb-1">Win Rate</div>
               <div className="text-win font-mono text-xl font-bold">{(traits.winRate * 100).toFixed(1)}%</div>
@@ -1429,7 +1430,7 @@ export default async function ChampionDetailPage({
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div className="lg:col-span-8 space-y-8">
-          <div className="glass rounded-lg border border-border p-3">
+          <div className="lux-panel rounded-lg p-3">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
               {modeTabs.map((mode) => {
                 const active = mode.id === selectedMode;
@@ -1437,8 +1438,8 @@ export default async function ChampionDetailPage({
                   <Link
                     key={mode.id}
                     href={`/campeoes/${champ.id}${mode.id === "ranked" ? "" : `?modo=${mode.id}`}`}
-                    className={`rounded-lg border px-3 py-3 text-center transition ${
-                      active ? "border-gold bg-gold/10 text-gold" : "border-border bg-elevated/35 text-text-secondary hover:border-border-bright hover:text-text-primary"
+                    className={`rounded-lg px-3 py-3 text-center transition ${
+                      active ? "mode-pill-active" : "mode-pill text-text-secondary hover:border-border-bright hover:text-text-primary"
                     }`}
                   >
                     <div className="text-xs font-bold uppercase tracking-wide">{mode.short}</div>
@@ -1449,7 +1450,7 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="glass p-6 rounded-lg border border-border space-y-6">
+          <div className="lux-panel p-6 rounded-lg space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Zap className="w-5 h-5 text-gold" />
               Configuracao recomendada
@@ -1493,7 +1494,7 @@ export default async function ChampionDetailPage({
             <AramChaosCardsPanel championId={champ.id} championName={champ.name} />
           )}
 
-          <div className="glass p-6 rounded-lg border border-border space-y-6">
+          <div className="lux-panel p-6 rounded-lg space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Shield className="w-5 h-5 text-gold" />
               Build de itens
@@ -1544,7 +1545,7 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="glass p-6 rounded-lg border border-border space-y-5">
+          <div className="lux-panel p-6 rounded-lg space-y-5">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Users className="w-5 h-5 text-gold" />
               Sinergias de composicao
@@ -1560,7 +1561,7 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="glass p-6 rounded-lg border border-border space-y-6">
+          <div className="lux-panel p-6 rounded-lg space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Award className="w-5 h-5 text-gold" />
               Ordem de habilidades
@@ -1609,7 +1610,7 @@ export default async function ChampionDetailPage({
         </div>
 
         <aside className="lg:col-span-4 space-y-8">
-          <div className="glass p-6 rounded-lg border border-border space-y-6">
+          <div className="lux-panel p-6 rounded-lg space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Star className="w-5 h-5 text-gold" />
               Runas recomendadas
@@ -1651,7 +1652,7 @@ export default async function ChampionDetailPage({
             </div>
           </div>
 
-          <div className="glass p-6 rounded-lg border border-border space-y-6">
+          <div className="lux-panel p-6 rounded-lg space-y-6">
             <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
               <Skull className="w-5 h-5 text-gold" />
               Counters e matchups

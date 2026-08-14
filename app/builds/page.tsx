@@ -44,16 +44,16 @@ export default async function BuildsPage({ searchParams }: { searchParams?: Prom
   const champions = Object.values(data);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div className="rift-shell max-w-7xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       <div className="space-y-3">
-        <span className="text-xs font-bold uppercase tracking-wider text-gold">Build planner</span>
+        <span className="section-kicker">Build planner</span>
         <h1 className="font-display text-4xl font-black text-text-primary">Builds de {mode.label} para montar antes da partida</h1>
         <p className="max-w-2xl text-text-secondary">
           {mode.description} Escolha um perfil abaixo ou abra qualquer campeao para usar o montador com core, botas e itens situacionais no estilo OP.GG.
         </p>
       </div>
 
-      <div className="glass rounded-lg border border-border p-3">
+      <div className="lux-panel rounded-lg p-3">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
           {modeTabs.map((item) => {
             const active = item.id === selectedMode;
@@ -61,8 +61,8 @@ export default async function BuildsPage({ searchParams }: { searchParams?: Prom
               <Link
                 key={item.id}
                 href={`/builds${item.id === "ranked" ? "" : `?modo=${item.id}`}`}
-                className={`flex items-center justify-center gap-2 rounded-lg border px-3 py-3 text-sm font-semibold transition ${
-                  active ? "border-gold bg-gold/10 text-gold" : "border-border bg-elevated/35 text-text-secondary hover:border-border-bright hover:text-text-primary"
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-3 text-sm font-semibold transition ${
+                  active ? "mode-pill-active" : "mode-pill text-text-secondary hover:border-border-bright hover:text-text-primary"
                 }`}
               >
                 <Gamepad2 className="h-4 w-4" />
@@ -78,7 +78,7 @@ export default async function BuildsPage({ searchParams }: { searchParams?: Prom
           const picks = champions.filter((champion) => champion.tags.includes(id)).slice(0, 5);
 
           return (
-            <div key={id} className="glass rounded-lg border border-border p-5">
+            <div key={id} className="interactive-card rounded-lg p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="h-10 w-10 rounded-lg border border-gold/30 bg-gold/10 flex items-center justify-center text-gold">
                   <Icon className="h-5 w-5" />
@@ -99,7 +99,7 @@ export default async function BuildsPage({ searchParams }: { searchParams?: Prom
         })}
       </div>
 
-      <div className="glass rounded-lg border border-border p-6">
+      <div className="lux-panel rounded-lg p-6">
         <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
           <div>
             <h2 className="font-display text-xl font-bold">Campeoes populares para testar builds</h2>
@@ -113,7 +113,7 @@ export default async function BuildsPage({ searchParams }: { searchParams?: Prom
 
         <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {champions.slice(0, 18).map((champion) => (
-            <Link key={champion.id} href={championHref(champion.id, selectedMode)} className="rounded-lg border border-border bg-elevated/35 p-3 hover:border-gold/60">
+            <Link key={champion.id} href={championHref(champion.id, selectedMode)} className="interactive-card rounded-lg p-3">
               <img src={cdnChampionSquare(PATCH, champion.id)} alt={champion.name} className="aspect-square w-full rounded object-cover" />
               <div className="mt-2 truncate text-sm font-semibold">{champion.name}</div>
               <div className="text-xs text-text-muted">{champion.tags.slice(0, 2).join(" / ")}</div>

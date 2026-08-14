@@ -60,7 +60,7 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
   };
 
   return (
-    <div className="glass rounded-lg border border-border p-6">
+    <div className="lux-panel rounded-lg p-6">
       <div className="mb-6 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="font-display flex items-center gap-2 text-xl font-bold">
@@ -84,8 +84,8 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
             <button
               key={option.id}
               onClick={() => chooseOption(option.id)}
-              className={`rounded-lg border p-4 text-left transition-colors ${
-                active ? "border-gold bg-gold/10" : "border-border bg-elevated/35 hover:border-border-bright"
+              className={`rounded-lg p-4 text-left transition-colors ${
+                active ? "mode-pill-active" : "interactive-card"
               }`}
             >
               <div className="mb-3 flex items-start justify-between gap-3">
@@ -127,7 +127,7 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-lg border border-border bg-elevated/35 p-4">
+        <div className="stat-strip rounded-lg p-4">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="font-semibold text-text-primary">Sua build montada</h3>
@@ -180,7 +180,7 @@ export function BuildOptionsPanel({ championName, patch, options, modeLabel = "R
           </div>
         </div>
 
-        <div className="rounded-lg border border-border bg-elevated/35 p-4">
+        <div className="stat-strip rounded-lg p-4">
           <div className="mb-4 flex items-center gap-2">
             <Shield className="h-4 w-4 text-gold" />
             <h3 className="font-semibold text-text-primary">Situacionais</h3>

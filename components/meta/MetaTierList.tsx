@@ -72,7 +72,7 @@ export function MetaTierList({ initialMeta }: { initialMeta: MetaPayload }) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-3 rounded-lg border border-border bg-surface/80 p-4 md:flex-row md:items-center md:justify-between">
+      <div className="lux-panel flex flex-col gap-3 rounded-lg p-4 md:flex-row md:items-center md:justify-between">
         <div>
           <p className="text-sm font-semibold text-text-primary">{sourceLabel}</p>
           <p className="mt-1 text-xs text-text-muted">
@@ -115,7 +115,7 @@ export function MetaTierList({ initialMeta }: { initialMeta: MetaPayload }) {
 
       <section className="grid grid-cols-1 gap-3 md:grid-cols-5">
         {featured.map((champion, index) => (
-          <Link key={`${champion.id}-${champion.lane}`} href={`/campeoes/${champion.id}`} className="group overflow-hidden rounded-lg border border-border bg-surface transition hover:border-gold/50">
+          <Link key={`${champion.id}-${champion.lane}`} href={`/campeoes/${champion.id}`} className="interactive-card group rounded-lg">
             <div className="relative h-28 overflow-hidden">
               <img src={cdnChampionSquare(meta.patch, champion.id)} alt={champion.name} className="h-full w-full scale-110 object-cover opacity-80 transition group-hover:scale-125" />
               <div className="absolute inset-0 bg-gradient-to-t from-void via-void/30 to-transparent" />
@@ -136,7 +136,7 @@ export function MetaTierList({ initialMeta }: { initialMeta: MetaPayload }) {
         {meta.rowsByLane.map(({ id, label, description, rows }) => {
           const Icon = laneIcons[id];
           return (
-            <section key={id} className="overflow-hidden rounded-lg border border-border bg-surface/80 shadow-card">
+            <section key={id} className="lux-panel rounded-lg">
               <div className="flex items-center justify-between border-b border-border bg-elevated/40 px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded border border-gold/30 bg-gold/10">
@@ -165,7 +165,7 @@ export function MetaTierList({ initialMeta }: { initialMeta: MetaPayload }) {
               )}
 
               {rows.map((champion, index) => (
-                <Link key={`${champion.id}-${champion.lane}`} href={`/campeoes/${champion.id}`} className="grid grid-cols-[36px_1fr_58px_64px_64px] gap-2 border-b border-border/50 px-3 py-3 last:border-b-0 hover:bg-elevated/40 sm:grid-cols-[42px_1fr_62px_68px_68px] sm:gap-3 sm:px-4">
+                <Link key={`${champion.id}-${champion.lane}`} href={`/campeoes/${champion.id}`} className="table-row-glow grid grid-cols-[36px_1fr_58px_64px_64px] gap-2 border-b border-border/50 px-3 py-3 last:border-b-0 sm:grid-cols-[42px_1fr_62px_68px_68px] sm:gap-3 sm:px-4">
                   <span className="self-center font-mono text-sm font-bold text-text-muted">{index + 1}</span>
                   <span className="flex min-w-0 items-center gap-3">
                     <img src={cdnChampionSquare(meta.patch, champion.id)} alt={champion.name} className="h-10 w-10 rounded border border-border object-cover" />
@@ -186,7 +186,7 @@ export function MetaTierList({ initialMeta }: { initialMeta: MetaPayload }) {
         })}
       </div>
 
-      <div className="rounded-lg border border-border bg-deep p-4 text-sm text-text-secondary">
+      <div className="lux-panel rounded-lg p-4 text-sm text-text-secondary">
         <BarChart2 className="mr-2 inline h-4 w-4 text-gold" />
         {meta.source === "riot"
           ? "Conectado na Riot API: dados calculados a partir de partidas ranqueadas recentes da fila Solo/Duo high elo."

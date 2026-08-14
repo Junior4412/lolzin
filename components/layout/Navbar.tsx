@@ -124,7 +124,7 @@ export default function Navbar() {
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           scrolled
             ? "glass border-b border-border shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
-            : "bg-transparent"
+            : "bg-void/35 backdrop-blur-sm"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-4">
@@ -147,7 +147,7 @@ export default function Navbar() {
                 href={href}
                 className={cn(
                   "flex items-center gap-1.5 px-3 py-1.5 rounded text-sm font-medium text-text-secondary transition-all duration-200",
-                  "hover:text-text-primary hover:bg-elevated"
+                  "hover:text-gold hover:bg-gold/10 hover:shadow-[inset_0_-1px_0_rgba(200,168,90,0.35)]"
                 )}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -169,8 +169,8 @@ export default function Navbar() {
             onClick={openSearch}
             className={cn(
               "flex items-center gap-2 px-3 py-1.5 rounded border transition-all duration-200 text-sm cursor-pointer",
-              "border-border text-text-muted hover:border-border-bright hover:text-text-secondary",
-              "bg-surface/50 hover:bg-elevated"
+              "border-border text-text-muted hover:border-gold/45 hover:text-text-secondary",
+              "bg-surface/70 hover:bg-elevated"
             )}
           >
             <Search className="w-4 h-4" />

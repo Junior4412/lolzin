@@ -31,15 +31,16 @@ const comparison = [
 
 export default function Home() {
   return (
-    <div className="flex flex-col">
+    <div className="rift-shell flex flex-col">
       <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg')] bg-cover bg-center opacity-35" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(79,195,247,0.18),transparent_32%),linear-gradient(90deg,rgba(3,6,14,0.98),rgba(3,6,14,0.78),rgba(3,6,14,0.96))]" />
+        <div className="absolute inset-0 bg-[url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yasuo_0.jpg')] bg-cover bg-center opacity-45" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,6,14,0.99),rgba(3,6,14,0.76),rgba(3,6,14,0.94)),linear-gradient(180deg,rgba(7,13,26,0.24),rgba(3,6,14,0.96))]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-void to-transparent" />
 
         <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl flex-col justify-center px-4 py-16 sm:px-6">
           <div className="max-w-3xl animate-slide-up">
-            <div className="mb-6 inline-flex items-center gap-2 rounded border border-gold/30 bg-gold/10 px-3 py-1.5 text-sm font-semibold text-gold">
+            <div className="section-kicker mb-6">
               <Zap className="h-4 w-4" />
               Patch {PATCH} disponivel
             </div>
@@ -68,14 +69,14 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-12 grid max-w-4xl grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="stat-strip mt-12 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-lg md:grid-cols-4">
             {[
               ["184", "paginas de campeoes"],
               ["5", "lanes separadas"],
               ["11", "regioes de perfil"],
               ["3", "opcoes por build"],
             ].map(([value, label]) => (
-              <div key={label} className="rounded border border-border bg-void/70 p-4 backdrop-blur">
+              <div key={label} className="bg-void/60 p-4 backdrop-blur">
                 <p className="font-mono text-2xl font-black text-gold">{value}</p>
                 <p className="mt-1 text-xs uppercase tracking-wider text-text-muted">{label}</p>
               </div>
@@ -86,8 +87,10 @@ export default function Home() {
 
       <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 px-4 py-14 sm:px-6 md:grid-cols-5">
         {lanes.map(({ label, icon: Icon, text }) => (
-          <Link key={label} href="/meta" className="group rounded-lg border border-border bg-surface p-5 transition hover:border-gold/50 hover:bg-elevated/60">
-            <Icon className="h-6 w-6 text-gold" />
+          <Link key={label} href="/meta" className="interactive-card group rounded-lg p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded border border-gold/30 bg-gold/10">
+              <Icon className="h-5 w-5 text-gold" />
+            </div>
             <h2 className="mt-4 font-display text-xl font-bold group-hover:text-gold">{label}</h2>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
           </Link>
@@ -95,10 +98,10 @@ export default function Home() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6">
-        <div className="rounded-lg border border-border bg-deep p-5 md:p-7">
+        <div className="lux-panel rounded-lg p-5 md:p-7">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-gold">Comparativo</span>
+              <span className="section-kicker">Comparativo</span>
               <h2 className="mt-2 font-display text-3xl font-black">OP.GG + Blitz, com foco em decisao rapida</h2>
             </div>
             <Link href="/builds" className="inline-flex w-fit items-center gap-2 rounded border border-gold/30 bg-gold/10 px-4 py-2 text-sm font-semibold text-gold hover:bg-gold/15">
@@ -109,8 +112,10 @@ export default function Home() {
 
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
             {comparison.map(({ title, text, icon: Icon }) => (
-              <article key={title} className="rounded-lg border border-border bg-surface p-5">
-                <Icon className="h-6 w-6 text-gold" />
+              <article key={title} className="interactive-card rounded-lg p-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded border border-arcane-bright/25 bg-arcane-bright/10">
+                  <Icon className="h-5 w-5 text-arcane-bright" />
+                </div>
                 <h3 className="mt-4 font-display text-xl font-bold">{title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
               </article>
@@ -118,15 +123,15 @@ export default function Home() {
           </div>
 
           <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-text-secondary md:grid-cols-3">
-            <div className="rounded border border-border bg-elevated/35 p-3">
+            <div className="mode-pill rounded p-3">
               <Users className="mr-2 inline h-4 w-4 text-arcane-bright" />
               Sinergias e counters na pagina do campeao.
             </div>
-            <div className="rounded border border-border bg-elevated/35 p-3">
+            <div className="mode-pill rounded p-3">
               <Sparkles className="mr-2 inline h-4 w-4 text-arcane-bright" />
               ARAM Desordem com cartas quando ha dado curado.
             </div>
-            <div className="rounded border border-border bg-elevated/35 p-3">
+            <div className="mode-pill rounded p-3">
               <Target className="mr-2 inline h-4 w-4 text-arcane-bright" />
               Build ajustada contra matchup dificil.
             </div>
@@ -155,7 +160,7 @@ export default function Home() {
             icon: Search,
           },
         ].map(({ href, title, text, icon: Icon }) => (
-          <Link key={title} href={href} className="group relative overflow-hidden rounded-lg border border-border bg-surface p-6 shadow-card transition hover:border-gold/50">
+          <Link key={title} href={href} className="interactive-card group rounded-lg p-6">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent opacity-0 transition group-hover:opacity-100" />
             <Icon className="h-7 w-7 text-gold" />
             <h2 className="mt-5 font-display text-2xl font-bold">{title}</h2>
