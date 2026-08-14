@@ -14,7 +14,6 @@ import {
 import type { ChampionTier } from "@/types";
 import {
   Award,
-  AlertTriangle,
   BookOpen,
   ChevronRight,
   ExternalLink,
@@ -1285,11 +1284,20 @@ function SynergyCard({ synergy }: { synergy: SynergyGuide }) {
   );
 }
 
-function AramChaosCardsPanel({ championId, championName }: { championId: string; championName: string }) {
-  const entry = getAramMayhemAugments(championId);
+function AramChaosCardsPanel({
+  championId,
+  championName,
+  archetype,
+}: {
+  championId: string;
+  championName: string;
+  archetype: ChampionArchetype;
+}) {
+  const entry = getAramMayhemAugments(championId, archetype);
+  const isCurated = entry.kind === "curated";
 
   return (
-    <div className="glass rounded-lg border border-border p-6">
+    <div className="lux-panel rounded-lg p-6">
       <div className="mb-6 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-arcane-bright">ARAM Desordem</span>
@@ -1299,51 +1307,44 @@ function AramChaosCardsPanel({ championId, championName }: { championId: string;
           </h2>
         </div>
         <span className="w-fit rounded border border-arcane-bright/30 bg-arcane-bright/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-arcane-bright">
-          Aprimoramentos
+          {isCurated ? "Campeao curado" : entry.profileLabel}
         </span>
       </div>
 
-      {entry ? (
-        <>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            {(["Silver", "Gold", "Prismatic"] as const).map((rarity) => {
-              const tone = augmentTone[rarity];
-              return (
-                <article key={rarity} className={`rounded-lg border p-4 ${tone.className}`}>
-                  <div className="mb-4 flex items-center justify-between gap-3">
-                    <span className="flex h-10 w-10 items-center justify-center rounded border border-current/30 bg-black/20 font-display text-lg font-black">
-                      {rarity[0]}
-                    </span>
-                    <span className="rounded border border-current/30 px-2 py-0.5 text-xs font-bold uppercase">{tone.label}</span>
-                  </div>
-                  <h3 className="text-lg font-bold text-text-primary">{entry.picks[rarity]}</h3>
-                  <p className="mt-2 text-sm text-text-secondary">Melhor carta {tone.label.toLowerCase()} curada para esse campeao.</p>
-                </article>
-              );
-            })}
-          </div>
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        {(["Silver", "Gold", "Prismatic"] as const).map((rarity) => {
+          const tone = augmentTone[rarity];
+          const pick = entry.picks[rarity];
+          return (
+            <article key={rarity} className={`rounded-lg border p-4 ${tone.className}`}>
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded border border-current/30 bg-black/20 font-display text-lg font-black">
+                  {rarity[0]}
+                </span>
+                <span className="rounded border border-current/30 px-2 py-0.5 text-xs font-bold uppercase">{tone.label}</span>
+              </div>
+              <h3 className="text-lg font-bold text-text-primary">{pick.name}</h3>
+              <p className="mt-2 text-sm text-text-secondary">{pick.reason}</p>
+            </article>
+          );
+        })}
+      </div>
 
-          <div className="mt-4 rounded-lg border border-gold/20 bg-gold/10 p-3 text-xs leading-relaxed text-gold/90">
+      <div className={`mt-4 rounded-lg border p-3 text-xs leading-relaxed ${isCurated ? "border-gold/20 bg-gold/10 text-gold/90" : "border-arcane-bright/20 bg-arcane-bright/10 text-text-secondary"}`}>
+        {isCurated ? (
+          <>
             Fonte: METAsrc, patch {entry.patch}, coletado em {new Date(entry.collectedAt).toLocaleDateString("pt-BR")}. A Riot nao expoe estatistica pura do ARAM Desordem pela API, entao isso fica separado das builds normais.
             <a href={entry.sourceUrl} target="_blank" rel="noreferrer" className="ml-2 inline-flex items-center gap-1 font-semibold underline underline-offset-2">
               Ver fonte
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
-          </div>
-        </>
-      ) : (
-        <div className="rounded-lg border border-border bg-elevated/35 p-5">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-gold" />
-            <div>
-              <h3 className="font-semibold text-text-primary">Ainda sem cartas curadas para {championName}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                Esse campeao ainda nao tem carta verificada para ARAM Desordem na base local. Preferi mostrar esse aviso em vez de inventar carta, porque as cartas mudam bastante por patch.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+          </>
+        ) : (
+          <>
+            Recomendacao por perfil ({entry.profileLabel}) para {championName}. Use como melhor plano inicial ate existir coleta direta desse campeao no ARAM Desordem.
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -1491,7 +1492,7 @@ export default async function ChampionDetailPage({
           <ProBuildsPanel traits={traits} />
 
           {selectedMode === "aram-chaos" && (
-            <AramChaosCardsPanel championId={champ.id} championName={champ.name} />
+            <AramChaosCardsPanel championId={champ.id} championName={champ.name} archetype={traits.archetype} />
           )}
 
           <div className="lux-panel p-6 rounded-lg space-y-6">
