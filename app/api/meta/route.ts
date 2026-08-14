@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchChampionList } from "@/lib/ddragon";
 import { getChampionProfile, type PrimaryLane } from "@/lib/championProfiles";
-import { META_LANES, type MetaChampionRow, type MetaPayload, tierOfScore } from "@/lib/meta";
+import { createEstimatedMetaPayload, META_LANES, type MetaChampionRow, type MetaPayload, tierOfScore } from "@/lib/meta";
 import { PATCH } from "@/lib/utils";
 
 const REGION_MAPPING: Record<string, { platform: string; regional: string }> = {
@@ -81,20 +81,15 @@ async function resolvePuuid(entry: LeagueEntry, platform: string, apiKey: string
 }
 
 export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const region = (searchParams.get("region") || "br").toLowerCase();
   const apiKey = process.env.RIOT_API_KEY;
   if (!apiKey) {
-    return NextResponse.json(
-      {
-        error: "RIOT_API_KEY nao configurada. Configure a variavel na Vercel para ativar meta por amostra real.",
-        code: "riot_api_not_configured",
-      },
-      { status: 501 },
-    );
+    const { data: champions } = await fetchChampionList();
+    return NextResponse.json(createEstimatedMetaPayload(Object.values(champions), PATCH, region));
   }
 
   try {
-    const { searchParams } = new URL(req.url);
-    const region = (searchParams.get("region") || "br").toLowerCase();
     const config = REGION_MAPPING[region];
 
     if (!config) {
