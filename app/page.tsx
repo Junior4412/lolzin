@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BarChart2, Crosshair, Layers, Search, Shield, Sparkles, Swords, Target, Zap } from "lucide-react";
+import { ArrowRight, BarChart2, Crosshair, Gauge, Layers, Search, Shield, Sparkles, Swords, Target, Trophy, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui";
 import { PATCH } from "@/lib/utils";
 
@@ -9,6 +9,24 @@ const lanes = [
   { label: "Mid", icon: Sparkles, text: "Controle, burst e roaming." },
   { label: "ADC", icon: Target, text: "DPS, kiting e late game." },
   { label: "Suporte", icon: Crosshair, text: "Visao, engage e peel." },
+];
+
+const comparison = [
+  {
+    title: "OP.GG: decisoes por estatistica",
+    text: "Tier list por lane, counters, build contra campeao inimigo e leitura por patch/rank.",
+    icon: BarChart2,
+  },
+  {
+    title: "Blitz: contexto por modo",
+    text: "Abas para ARAM, Arena, ARAM Desordem, pro builds, sinergias e planos rapidos.",
+    icon: Trophy,
+  },
+  {
+    title: "LOLZIN: tudo no fluxo BR",
+    text: "Build por modo, cartas do Desordem, matchup, sinergia, skill order e perfil Riot ID no mesmo lugar.",
+    icon: Gauge,
+  },
 ];
 
 export default function Home() {
@@ -74,6 +92,46 @@ export default function Home() {
             <p className="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
           </Link>
         ))}
+      </section>
+
+      <section className="mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6">
+        <div className="rounded-lg border border-border bg-deep p-5 md:p-7">
+          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-gold">Comparativo</span>
+              <h2 className="mt-2 font-display text-3xl font-black">OP.GG + Blitz, com foco em decisao rapida</h2>
+            </div>
+            <Link href="/builds" className="inline-flex w-fit items-center gap-2 rounded border border-gold/30 bg-gold/10 px-4 py-2 text-sm font-semibold text-gold hover:bg-gold/15">
+              Abrir builds
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+            {comparison.map(({ title, text, icon: Icon }) => (
+              <article key={title} className="rounded-lg border border-border bg-surface p-5">
+                <Icon className="h-6 w-6 text-gold" />
+                <h3 className="mt-4 font-display text-xl font-bold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{text}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-text-secondary md:grid-cols-3">
+            <div className="rounded border border-border bg-elevated/35 p-3">
+              <Users className="mr-2 inline h-4 w-4 text-arcane-bright" />
+              Sinergias e counters na pagina do campeao.
+            </div>
+            <div className="rounded border border-border bg-elevated/35 p-3">
+              <Sparkles className="mr-2 inline h-4 w-4 text-arcane-bright" />
+              ARAM Desordem com cartas quando ha dado curado.
+            </div>
+            <div className="rounded border border-border bg-elevated/35 p-3">
+              <Target className="mr-2 inline h-4 w-4 text-arcane-bright" />
+              Build ajustada contra matchup dificil.
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-4 pb-16 sm:px-6 lg:grid-cols-3">

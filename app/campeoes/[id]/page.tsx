@@ -18,12 +18,15 @@ import {
   BookOpen,
   ChevronRight,
   ExternalLink,
+  Gauge,
   Shield,
   ShieldAlert,
   Skull,
   Sparkles,
   Star,
   Target,
+  Trophy,
+  Users,
   Zap,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -65,6 +68,13 @@ type MatchupGuide = {
   difficulty: "easy" | "medium" | "hard";
   score: number;
   tips: string[];
+};
+type SynergyGuide = {
+  championId: string;
+  championName: string;
+  lane: LaneId;
+  reason: string;
+  score: number;
 };
 
 const augmentTone: Record<AugmentRarity, { label: string; className: string }> = {
@@ -730,6 +740,46 @@ function createMatchups(id: string, tags: string[], champions: SimpleChampion[])
   return { hard, easy };
 }
 
+function preferredSynergyLanes(lane: LaneId): LaneId[] {
+  if (lane === "ADC") return ["Support", "Jungle", "Mid"];
+  if (lane === "Support") return ["ADC", "Jungle", "Mid"];
+  if (lane === "Jungle") return ["Mid", "Top", "Support"];
+  if (lane === "Mid") return ["Jungle", "Support", "ADC"];
+  return ["Jungle", "Mid", "Support"];
+}
+
+function synergyReason(lane: LaneId, partnerLane: LaneId, partnerName: string) {
+  if (lane === "ADC" && partnerLane === "Support") return `${partnerName} ajuda a proteger seu DPS e acelerar troca na rota.`;
+  if (lane === "Support" && partnerLane === "ADC") return `${partnerName} converte seu engage/peel em dano constante.`;
+  if (partnerLane === "Jungle") return `${partnerName} facilita gank, objetivo e snowball quando voce tem prioridade.`;
+  if (partnerLane === "Mid") return `${partnerName} melhora roaming e pressao no rio.`;
+  if (partnerLane === "Top") return `${partnerName} adiciona frontline ou side pressure para dividir a atencao inimiga.`;
+  return `${partnerName} complementa sua composicao com dano, controle ou protecao.`;
+}
+
+function createSynergies(id: string, tags: string[], champions: SimpleChampion[], lane: LaneId): SynergyGuide[] {
+  const seed = seedOf(`${id}-synergy`);
+  const preferred = preferredSynergyLanes(lane);
+  const scored = champions
+    .filter((champion) => champion.id !== id)
+    .map((champion) => {
+      const profile = getChampionProfile(champion.id, champion.tags);
+      const laneBonus = preferred.includes(profile.lane) ? 24 - preferred.indexOf(profile.lane) * 5 : 0;
+      const tagBonus = sharesMatchupPool(tags, champion.tags) ? 4 : 0;
+      const score = 54 + laneBonus + tagBonus + ((seed * seedOf(champion.id)) % 90) / 10;
+      return { champion, profile, score };
+    })
+    .sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, 4).map(({ champion, profile, score }) => ({
+    championId: champion.id,
+    championName: champion.name,
+    lane: profile.lane,
+    reason: synergyReason(lane, profile.lane, champion.name),
+    score: Number(Math.min(99, score).toFixed(1)),
+  }));
+}
+
 function getChampionBuildData(id: string, tags: string[], allChampions: SimpleChampion[]) {
   const seed = seedOf(id);
   const preset = championPresets[id];
@@ -760,6 +810,7 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
       skillTimeline: createSkillTimeline(preset.maxOrder),
       maxOrder: preset.maxOrder,
       matchups: createMatchups(id, tags, allChampions),
+      synergies: createSynergies(id, tags, allChampions, preset.lane),
       source: "Curado por campeao com referencia OP.GG/Blitz",
     };
   }
@@ -787,6 +838,7 @@ function getChampionBuildData(id: string, tags: string[], allChampions: SimpleCh
     skillTimeline: createSkillTimeline(template.maxOrder),
     maxOrder: template.maxOrder,
     matchups: createMatchups(id, tags, allChampions),
+    synergies: createSynergies(id, tags, allChampions, profile.lane),
     source: `Arquetipo ${archetypeLabel(profile.archetype)} com referencia OP.GG/Blitz`,
   };
 }
@@ -1105,6 +1157,134 @@ function MatchupCard({ matchup, tone }: { matchup: MatchupGuide; tone: "danger" 
   );
 }
 
+function MiniItemRow({ items }: { items: string[] }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((itemId, index) => (
+        <div key={`${itemId}-${index}`} className="h-10 w-10 overflow-hidden rounded border border-border bg-surface">
+          <img src={cdnItemImage(PATCH, `${itemId}.png`)} alt="Item" className="h-full w-full object-cover" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CounterBuildPanel({ traits }: { traits: ReturnType<typeof applyModeToTraits> }) {
+  const core = traits.items.core.slice(0, 2);
+  const fallbackSituational = traits.items.situational.length > 0 ? traits.items.situational : traits.items.core;
+  const plans = traits.matchups.hard.slice(0, 3).map((matchup, index) => ({
+    matchup,
+    item: fallbackSituational[index % fallbackSituational.length],
+    label: index === 0 ? "Lane dificil" : index === 1 ? "Trade seguro" : "Plano anti-carry",
+  }));
+
+  return (
+    <div className="glass rounded-lg border border-border p-6">
+      <div className="mb-5 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-gold">Contra matchup</span>
+          <h2 className="font-display mt-1 flex items-center gap-2 text-xl font-bold">
+            <ShieldAlert className="h-5 w-5 text-loss" />
+            Build adaptada por inimigo
+          </h2>
+        </div>
+        <span className="w-fit rounded border border-border bg-elevated/40 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-text-secondary">
+          Estilo OP.GG Pick
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        {plans.map(({ matchup, item, label }) => (
+          <article key={matchup.championId} className="rounded-lg border border-border bg-elevated/35 p-4">
+            <div className="mb-3 flex items-center gap-3">
+              <img src={cdnChampionSquare(PATCH, matchup.championId)} alt={matchup.championName} className="h-10 w-10 rounded border border-border object-cover" />
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-text-primary">{matchup.championName}</p>
+                <p className="text-xs text-loss">{label}</p>
+              </div>
+            </div>
+            <MiniItemRow items={[...core, item].filter(Boolean).slice(0, 3)} />
+            <p className="mt-3 text-xs leading-relaxed text-text-secondary">
+              Abra com o core e priorize o situacional mostrado quando esse campeao estiver ditando a luta.
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProBuildsPanel({ traits }: { traits: ReturnType<typeof applyModeToTraits> }) {
+  const variants = [
+    {
+      title: "SoloQ consistente",
+      label: "Mais seguro",
+      items: [traits.items.core[0], traits.items.core[1], traits.items.situational[0]].filter(Boolean),
+      text: "Prioriza spike de dois itens e um terceiro item defensivo/situacional.",
+    },
+    {
+      title: "Especialista agressivo",
+      label: "Snowball",
+      items: [traits.items.core[0], traits.items.situational[1], traits.items.core[2]].filter(Boolean),
+      text: "Mais teto de dano para punir vantagem cedo e acelerar objetivos.",
+    },
+    {
+      title: `${traits.modeLabel} recomendado`,
+      label: "Modo",
+      items: traits.items.core.slice(0, 3),
+      text: "Linha principal ajustada para o modo selecionado, com botas e compra situacional ao lado.",
+    },
+  ];
+
+  return (
+    <div className="glass rounded-lg border border-border p-6">
+      <div className="mb-5 flex flex-col gap-2 border-b border-border pb-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-gold">Pro builds</span>
+          <h2 className="font-display mt-1 flex items-center gap-2 text-xl font-bold">
+            <Trophy className="h-5 w-5 text-gold" />
+            Estilos para copiar rapido
+          </h2>
+        </div>
+        <span className="w-fit rounded border border-gold/30 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-gold">
+          Blitz inspired
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        {variants.map((variant) => (
+          <article key={variant.title} className="rounded-lg border border-border bg-elevated/35 p-4">
+            <div className="mb-3 flex items-start justify-between gap-3">
+              <h3 className="font-semibold text-text-primary">{variant.title}</h3>
+              <span className="rounded border border-border px-2 py-0.5 text-[10px] font-bold uppercase text-text-muted">{variant.label}</span>
+            </div>
+            <MiniItemRow items={variant.items.slice(0, 3)} />
+            <p className="mt-3 text-xs leading-relaxed text-text-secondary">{variant.text}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SynergyCard({ synergy }: { synergy: SynergyGuide }) {
+  return (
+    <Link href={`/campeoes/${synergy.championId}`} className="block rounded-lg border border-border bg-elevated/40 p-4 transition hover:border-gold/50">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <img src={cdnChampionSquare(PATCH, synergy.championId)} alt={synergy.championName} className="h-10 w-10 flex-shrink-0 rounded border border-border object-cover" />
+          <div className="min-w-0">
+            <div className="truncate font-semibold text-text-primary">{synergy.championName}</div>
+            <div className="text-xs text-text-muted">{laneLabel(synergy.lane)}</div>
+          </div>
+        </div>
+        <span className="font-mono text-sm font-bold text-win">{synergy.score.toFixed(1)}</span>
+      </div>
+      <p className="mt-3 text-xs leading-relaxed text-text-secondary">{synergy.reason}</p>
+    </Link>
+  );
+}
+
 function AramChaosCardsPanel({ championId, championName }: { championId: string; championName: string }) {
   const entry = getAramMayhemAugments(championId);
 
@@ -1305,6 +1485,10 @@ export default async function ChampionDetailPage({
 
           <BuildOptionsPanel championName={champ.name} patch={PATCH} options={buildOptions} modeLabel={traits.modeLabel} />
 
+          <CounterBuildPanel traits={traits} />
+
+          <ProBuildsPanel traits={traits} />
+
           {selectedMode === "aram-chaos" && (
             <AramChaosCardsPanel championId={champ.id} championName={champ.name} />
           )}
@@ -1357,6 +1541,22 @@ export default async function ChampionDetailPage({
                   ))}
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="glass p-6 rounded-lg border border-border space-y-5">
+            <h2 className="font-display text-xl font-bold border-b border-border pb-3 flex items-center gap-2">
+              <Users className="w-5 h-5 text-gold" />
+              Sinergias de composicao
+            </h2>
+            <div className="space-y-3">
+              {traits.synergies.map((synergy) => (
+                <SynergyCard key={synergy.championId} synergy={synergy} />
+              ))}
+            </div>
+            <div className="rounded-lg border border-arcane-bright/20 bg-arcane-bright/10 p-3 text-xs text-text-secondary leading-relaxed flex gap-2">
+              <Gauge className="w-4 h-4 flex-shrink-0 mt-0.5 text-arcane-bright" />
+              Inspirado na leitura de pick/ban: prioriza lanes que combinam com sua funcao, pressao de mapa e protecao de carry.
             </div>
           </div>
 
